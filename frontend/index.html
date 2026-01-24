@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TLC/PCNL Dashboard - HWH Division</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -318,7 +319,11 @@ updateClock();
 function setActive(btn) {
   document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
+
+  document.querySelector(".sidebar").classList.remove("show");
+  document.getElementById("overlay").style.display = "none";
 }
+
 
 /* ================= MODULE LOADERS ================= */
 function loadCrewModule(btn) {
@@ -742,11 +747,13 @@ function formatDate(dateStr) {
 }
 
 /* ============ MOBILE MENU TOGGLE ============ */
-const menuBtn = document.getElementById("menuToggle");
-const sidebar = document.querySelector(".sidebar");
-const overlay = document.getElementById("overlay");
+document.addEventListener("DOMContentLoaded", () => {
+  const menuBtn = document.getElementById("menuToggle");
+  const sidebar = document.querySelector(".sidebar");
+  const overlay = document.getElementById("overlay");
 
-if (menuBtn && sidebar && overlay) {
+  if (!menuBtn || !sidebar || !overlay) return;
+
   menuBtn.addEventListener("click", () => {
     sidebar.classList.toggle("show");
     overlay.style.display = sidebar.classList.contains("show") ? "block" : "none";
@@ -756,7 +763,7 @@ if (menuBtn && sidebar && overlay) {
     sidebar.classList.remove("show");
     overlay.style.display = "none";
   });
-}
+});
 
 /* ================= LOAD DEFAULT ================= */
 document.addEventListener("DOMContentLoaded", () => {
