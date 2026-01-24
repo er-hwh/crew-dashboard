@@ -281,10 +281,10 @@ body {
     <button class="active" onclick="loadCrewModule(this)">
       <i class="fa-solid fa-users"></i> Crew Search
     </button>
-    <!-- <button onclick="loadSpeedModule(this)">
+    <button onclick="loadSpeedModule(this)">
       <i class="fa-solid fa-gauge-high"></i> Speed Analyzer
     </button>
-    <button onclick="loadSPMModule(this)">
+    <!-- <button onclick="loadSPMModule(this)">
       <i class="fa-solid fa-chart-line"></i> SPM Analysis
     </button>
     <button onclick="loadMemoModule(this)">
@@ -397,17 +397,29 @@ function loadCrewModule(btn) {
   `;
 
   bindFilterEvents();
-  loadMeta();
   initCrewSearch();
+
+  // Default Division = HWH
+  document.getElementById("divisionFilter").value = "HWH";
+  loadMeta();
 }
 
 /* ================= PLACEHOLDERS ================= */
 function loadSpeedModule(btn) {
   if (btn) setActive(btn);
+
+  // Open in new tab
+  window.open(
+    "https://er-hwh.github.io/train-speed-violation-analyzer/",
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+  // Optional: show message in dashboard
   document.getElementById("content").innerHTML = `
     <h4><i class="fa-solid fa-gauge-high"></i> Speed Violation Analyzer</h4>
-    <div class="alert alert-info mt-3">
-      Excel upload, violation charts & trend analysis will appear here.
+    <div class="alert alert-success mt-3">
+      Speed Analyzer opened in a new tab.
     </div>
   `;
 }
