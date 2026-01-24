@@ -45,6 +45,9 @@ app.get("/", (req, res) => {
 app.get("/admin-upload", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "upload.html"));
 });
+app.get("/speed", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "speed.html"));
+});
 
 // =======================
 // Progress API
