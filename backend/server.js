@@ -9,6 +9,7 @@ const { parseAndSave, setProgressRef } = require("./excelParser");
 const pool = require("./db");
 
 const app = express();
+app.use(express.static(path.join(__dirname, "../frontend")));
 const upload = multer({ dest: "uploads/" });
 
 // =======================
@@ -31,7 +32,6 @@ app.use(express.json());
 // =======================
 // Serve Frontend
 // =======================
-const path = require("path");
 
 // Serve frontend folder
 app.use(express.static(path.join(__dirname, "../frontend")));
