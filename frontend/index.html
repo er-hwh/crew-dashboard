@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TLC/PCNL Dashboard - HWH Division</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+body {
+  background: #f1f4f8;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  margin: 0;
+}
+
+/* ================= LAYOUT ================= */
+.app { display: flex; min-height: 100vh; }
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 240px;
+  background: #0b3c6f;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar h4 {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+.menu { flex: 1; padding: 10px; }
+.menu button {
+  width: 100%;
+  background: none;
+  border: none;
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+.menu button:hover,
+.menu button.active {
+  background: rgba(255,255,255,0.15);
+}
+
+/* ================= MAIN ================= */
+.main { flex: 1; display: flex; flex-direction: column; }
+
+/* ================= HEADER ================= */
+.header {
+  background: linear-gradient(135deg, #003366, #0b4fa2);
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ================= CONTENT ================= */
+.content { flex: 1; padding: 20px; }
+
+/* ================= FOOTER ================= */
+.footer {
+  background: #eef2f7;
+  padding: 8px 20px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+/* ================= SEARCH BAR ================= */
+.search-wrapper {
+  max-width: 1200px;
+  margin: auto;
+  position: relative;
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.filter-mini {
+  min-width: 140px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  background: #f8fafc;
+}
+
+.search-wide {
+  width: 100%;
+}
+
+.search-wide .form-control {
+  height: 48px;
+  font-size: 1rem;
+  border-radius: 14px 0 0 14px;
+}
+
+.search-wide .input-group-text {
+  height: 48px;
+  border-radius: 0 14px 14px 0;
+  background: linear-gradient(135deg, #0d6efd, #084298);
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* ================= SUGGESTIONS ================= */
+#suggestions {
+  width: 100%;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border-radius: 0 0 16px 16px;
+  overflow: hidden;
+}
+
+.result-header {
+  background: #eef3fb;
+  padding: 8px 15px;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+}
+
+.list-group-item {
+  padding: 14px 18px;
+  font-size: 0.95rem;
+}
+
+.suggest-item {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.suggest-item:hover,
+.suggest-item.active {
+  background: #e8f0ff;
+}
+
+/* ================= RESULT PANEL ================= */
+.result-panel {
+  max-width: 1200px;
+  margin: 20px auto;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  padding: 25px;
+  overflow: visible;
+}
+
+/* ================= PROFILE TOP ================= */
+.profile-top {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 15px;
+}
+
+.profile-avatar {
+  font-size: 4rem;
+  color: #0b4fa2;
+}
+
+.profile-highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.highlight-box {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+.highlight-box b {
+  display: block;
+  color: #334155;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+}
+
+/* ================= LR ================= */
+.section-block {
+  margin-top: 25px;
+}
+
+.section-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lr-valid { background-color: #dcfce7; }
+.lr-expired { background-color: #fee2e2; }
+
+.highlight {
+  background: #fff3b0;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h4><i class="fa-solid fa-train"></i> TLC/PCNL</h4>
+  <div class="menu">
+    <button class="active" onclick="loadCrewModule(this)">
+      <i class="fa-solid fa-users"></i> Crew Search
+    </button>
+    <button onclick="loadSpeedModule(this)">
+      <i class="fa-solid fa-gauge-high"></i> Speed Analyzer
+    </button>
+    <button onclick="loadSPMModule(this)">
+      <i class="fa-solid fa-chart-line"></i> SPM Analysis
+    </button>
+    <button onclick="loadMemoModule(this)">
+      <i class="fa-solid fa-file-lines"></i> Memo / Long Hours
+    </button>
+    <button onclick="loadContactModule(this)">
+      <i class="fa-solid fa-phone"></i> Contact Us
+    </button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="d-flex align-items-center gap-3">
+    <img src="/logo.png" height="40" onerror="this.style.display='none'">
+    <div>
+      <div class="fw-bold">TLC / PCNL Dashboard — HWH Division</div>
+      <small>Eastern Railway</small>
+    </div>
+  </div>
+  <div id="clock"></div>
+</div>
+
+<!-- CONTENT -->
+<div id="content" class="content"></div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Developed by S Samanta / APCNL
+</div>
+
+</div>
+</div>
+
+<script>
+const API_BASE = "http://localhost:3000";
+// later change to Render URL
+
+/* ================= CLOCK ================= */
+function updateClock() {
+  document.getElementById("clock").innerText = new Date().toLocaleString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ================= MENU ================= */
+function setActive(btn) {
+  document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+/* ================= MODULE LOADERS ================= */
+function loadCrewModule(btn) {
+  if (btn) setActive(btn);
+
+  document.getElementById("content").innerHTML = `
+    <h4 class="mb-3 d-flex align-items-center gap-2">
+      <i class="fa-solid fa-users"></i> Crew Search
+    </h4>
+
+    <div class="search-wrapper">
+
+      <div class="filter-row">
+        <select id="divisionFilter" class="form-select filter-mini">
+          <option value="">All Division</option>
+          <option value="HWH">HWH</option>
+          <option value="SDAH">SDAH</option>
+          <option value="ASN">ASN</option>
+          <option value="MLDT">MLDT</option>
+        </select>
+
+        <select id="lobbyFilter" class="form-select filter-mini">
+          <option value="">All Lobby</option>
+        </select>
+
+        <select id="desigFilter" class="form-select filter-mini">
+          <option value="">All Designation</option>
+        </select>
+      </div>
+
+      <div class="input-group input-group-lg search-wide">
+        <input 
+          id="search"
+          class="form-control"
+          placeholder="Search Crew ID, Name, Designation or Mobile"
+          autocomplete="off"
+        >
+        <span class="input-group-text">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </span>
+      </div>
+
+      <div id="suggestions" class="list-group shadow position-absolute" style="display:none;"></div>
+    </div>
+
+    <div id="resultBox" class="result-panel"></div>
+  `;
+
+  bindFilterEvents();
+  loadMeta();
+  initCrewSearch();
+}
+
+/* ================= PLACEHOLDERS ================= */
+function loadSpeedModule(btn) {
+  if (btn) setActive(btn);
+  document.getElementById("content").innerHTML = `
+    <h4><i class="fa-solid fa-gauge-high"></i> Speed Violation Analyzer</h4>
+    <div class="alert alert-info mt-3">
+      Excel upload, violation charts & trend analysis will appear here.
+    </div>
+  `;
+}
+
+function loadSPMModule(btn) {
+  if (btn) setActive(btn);
+  document.getElementById("content").innerHTML = `
+    <h4><i class="fa-solid fa-chart-line"></i> SPM Analysis</h4>
+    <div class="alert alert-info mt-3">
+      SPM performance reports & grading dashboard.
+    </div>
+  `;
+}
+
+function loadMemoModule(btn) {
+  if (btn) setActive(btn);
+  document.getElementById("content").innerHTML = `
+    <h4><i class="fa-solid fa-file-lines"></i> Memo & Long Hours</h4>
+    <div class="alert alert-info mt-3">
+      Memo tracking & compliance reports.
+    </div>
+  `;
+}
+
+function loadContactModule(btn) {
+  if (btn) setActive(btn);
+  document.getElementById("content").innerHTML = `
+    <h4><i class="fa-solid fa-phone"></i> Contact</h4>
+    <p class="mt-3">
+      TLC Office — HWH Division<br>
+      Eastern Railway<br><br>
+      Developed by S Samanta / APCNL
+    </p>
+  `;
+}
+
+/* ================= FILTER META ================= */
+function bindFilterEvents() {
+  const division = document.getElementById("divisionFilter");
+  const lobby = document.getElementById("lobbyFilter");
+  const desig = document.getElementById("desigFilter");
+  const input = document.getElementById("search");
+
+  async function rerunSearch() {
+    const q = input.value.trim();
+    if (!q) return;
+
+    const list = await fetchSuggestions(q);
+    showSuggestions(list, q);
+  }
+
+  // Division reloads lobby, keeps designation
+  division.addEventListener("change", async () => {
+    await loadLobbiesOnly();
+    rerunSearch();
+  });
+
+  // These never reset anything — only search
+  lobby.addEventListener("change", rerunSearch);
+  desig.addEventListener("change", rerunSearch);
+}
+
+async function loadLobbiesOnly() {
+  try {
+    const division = document.getElementById("divisionFilter").value;
+    const lobbySelect = document.getElementById("lobbyFilter");
+
+    // Save current selection
+    const prevLobby = lobbySelect.value;
+
+    const res = await fetch(`/lobbies?division=${division}`);
+    const lobbies = await res.json();
+
+    lobbySelect.innerHTML = `<option value="">All Lobby</option>` +
+      lobbies.map(l => `<option value="${l}">${l}</option>`).join("");
+
+    // Restore selection if still valid
+    if (prevLobby && lobbies.includes(prevLobby)) {
+      lobbySelect.value = prevLobby;
+    }
+
+  } catch (e) {
+    console.error("LOBBY LOAD ERROR", e);
+  }
+}
+
+
+async function loadMeta() {
+  try {
+    // Save current designation
+    const desigSelect = document.getElementById("desigFilter");
+    const prevDesig = desigSelect.value;
+
+    // Load lobbies
+    await loadLobbiesOnly();
+
+    // Load designations
+    const desigRes = await fetch(`/designations`);
+    const designations = await desigRes.json();
+
+    desigSelect.innerHTML = `<option value="">All Designation</option>` +
+      designations.map(d => `<option value="${d}">${d}</option>`).join("");
+
+    // Restore designation if still exists
+    if (prevDesig && designations.includes(prevDesig)) {
+      desigSelect.value = prevDesig;
+    }
+
+  } catch (e) {
+    console.error("META LOAD ERROR", e);
+  }
+}
+
+/* ================= SEARCH ================= */
+let timer = null;
+let activeIndex = -1;
+
+function formatMobile(mobile) {
+  if (!mobile) return "";
+  let m = String(mobile).trim();
+  if (m.startsWith("+91")) m = m.slice(3);
+  else if (m.startsWith("91") && m.length > 10) m = m.slice(2);
+  return m.replace(/\D/g, "");
+}
+
+async function fetchSuggestions(q) {
+  const lobby = document.getElementById("lobbyFilter").value;
+  const desig = document.getElementById("desigFilter").value;
+  const division = document.getElementById("divisionFilter").value;
+
+  const url =
+    `/suggest?q=${encodeURIComponent(q)}` +
+    `&lobby=${lobby}&desig=${desig}&division=${division}`;
+
+  const res = await fetch(url);
+  return await res.json();
+}
+
+async function fetchProfile(crewId) {
+  const res = await fetch(`/search?q=${encodeURIComponent(crewId)}`);
+  return await res.json();
+}
+
+function highlight(text, q) {
+  if (!q) return text;
+  const re = new RegExp(`(${q})`, "gi");
+  return text.replace(re, `<span class="highlight">$1</span>`);
+}
+
+function initCrewSearch() {
+  const input = document.getElementById("search");
+  const box = document.getElementById("suggestions");
+
+  function runSearch() {
+    const q = input.value.trim();
+    clearTimeout(timer);
+
+    if (!q) {
+      box.style.display = "none";
+      activeIndex = -1;
+      return;
+    }
+
+    timer = setTimeout(async () => {
+      const list = await fetchSuggestions(q);
+      activeIndex = -1;
+      showSuggestions(list, q);
+    }, 200);
+  }
+
+  input.addEventListener("input", runSearch);
+
+  input.addEventListener("keydown", e => {
+    const items = box.querySelectorAll(".suggest-item");
+    if (!items.length) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeIndex = (activeIndex + 1) % items.length;
+    } 
+    else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeIndex = (activeIndex - 1 + items.length) % items.length;
+    } 
+    else if (e.key === "Enter") {
+      e.preventDefault();
+      if (activeIndex >= 0) items[activeIndex].click();
+      return;
+    }
+
+    items.forEach((el, i) => {
+      el.classList.toggle("active", i === activeIndex);
+    });
+  });
+
+  document.addEventListener("click", e => {
+    if (!box.contains(e.target) && e.target !== input) {
+      box.style.display = "none";
+    }
+  });
+}
+
+function showSuggestions(list, q) {
+  const box = document.getElementById("suggestions");
+
+  // NO DATA FOUND STATE
+  if (!list || !list.length) {
+    box.innerHTML = `
+      <div class="result-header">
+        Search Results — 0 found
+      </div>
+      <div class="list-group-item text-center text-muted py-4">
+        <i class="fa-solid fa-circle-exclamation fa-2x mb-2"></i>
+        <div class="fw-semibold">No Data Found</div>
+        <small>Try changing filters or search keywords</small>
+      </div>
+    `;
+    box.style.display = "block";
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="result-header">
+      Search Results — ${list.length} found
+    </div>
+  ` + list.map(item => `
+    <div class="list-group-item suggest-item d-flex justify-content-between align-items-center"
+      onclick="selectCrew('${item.crew_id}')">
+
+      <div class="text-truncate">
+        <b>${highlight(item.crew_id, q)}</b>
+        <span class="ms-2">
+          ${highlight(item.crew_name || "", q)}
+          <span class="text-primary fw-semibold">
+            — ${item.designation || "N/A"}
+          </span>
+          <span class="text-muted">
+            — ${item.mobile ? formatMobile(item.mobile) : "No mobile"}
+          </span>
+        </span>
+      </div>
+
+      ${
+        item.mobile
+          ? `<a href="tel:+91${formatMobile(item.mobile)}"
+                class="btn btn-sm btn-success ms-2"
+                onclick="event.stopPropagation()">
+                <i class="fa-solid fa-phone"></i>
+             </a>`
+          : ``
+      }
+    </div>
+  `).join("");
+
+  box.style.display = "block";
+}
+
+async function selectCrew(id) {
+  document.getElementById("search").value = id;
+  document.getElementById("suggestions").style.display = "none";
+
+  const data = await fetchProfile(id);
+  renderProfile(data);
+}
+
+/* ================= PROFILE ================= */
+function renderProfile(data) {
+  const box = document.getElementById("resultBox");
+
+  if (!data) {
+    box.innerHTML = `<div class="alert alert-warning text-center">No crew found</div>`;
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="profile-top">
+      <div class="profile-avatar">
+        <i class="fa-solid fa-user-circle"></i>
+      </div>
+
+      <div class="flex-grow-1">
+        <h4 class="mb-1">${data.crew_name}</h4>
+        <span class="badge bg-primary">${data.crew_id}</span>
+
+        <div class="profile-highlights">
+          <div class="highlight-box"><b>Mobile</b><span>${data.mobile ? formatMobile(data.mobile) : "N/A"}</span></div>
+          <div class="highlight-box"><b>CLI Name</b><span>${data.cli_name || "N/A"}</span></div>
+          <div class="highlight-box"><b>Current Grade</b><span>${data.current_grade || "N/A"}</span></div>
+          <div class="highlight-box"><b>Designation</b><span>${data.designation || "N/A"}</span></div>
+        </div>
+      </div>
+
+      ${
+        data.mobile
+          ? `<a href="tel:+91${formatMobile(data.mobile)}" class="btn btn-success btn-lg">
+               <i class="fa-solid fa-phone"></i> Call
+             </a>`
+          : ``
+      }
+    </div>
+
+    <div class="profile-highlights mt-3">
+      <div class="highlight-box"><b>Level</b><span>${data.level || "N/A"}</span></div>
+      <div class="highlight-box"><b>Cadre</b><span>${data.cadre || "N/A"}</span></div>
+      <div class="highlight-box"><b>Employee No</b><span>${data.emp_no || "N/A"}</span></div>
+      <div class="highlight-box"><b>Appointment Date</b><span>${formatDate(data.appoint_date)}</span></div>
+      <div class="highlight-box"><b>Promotion Date</b><span>${formatDate(data.promotion_date)}</span></div>
+      <div class="highlight-box"><b>Retirement Date</b><span>${formatDate(data.retirement_date)}</span></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">
+        <i class="fa-solid fa-route"></i>
+        Route Learning Records
+      </div>
+
+      ${
+        data.routes && data.routes.length
+          ? `
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Section</th>
+                  <th>Route No</th>
+                  <th>Valid Till</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.routes.map(r => `
+                  <tr class="${r.status === "VALID" ? "lr-valid" : "lr-expired"}">
+                    <td>${r.section_code || ""}</td>
+                    <td>${r.route_no || ""}</td>
+                    <td>${formatDate(r.valid_till)}</td>
+                    <td>
+                      <span class="badge ${r.status === "VALID" ? "bg-success" : "bg-danger"}">
+                        ${r.status}
+                      </span>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>`
+          : `<div class="alert alert-secondary">No route learning data</div>`
+      }
+    </div>
+  `;
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return "N/A";
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+}
+
+/* ================= LOAD DEFAULT ================= */
+loadCrewModule();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
