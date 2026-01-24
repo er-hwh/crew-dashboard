@@ -31,14 +31,19 @@ app.use(express.json());
 // =======================
 // Serve Frontend
 // =======================
-app.use(express.static(path.join(__dirname, "public")));
+const path = require("path");
 
+// Serve frontend folder
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+// Home page
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "../frontend", "index.html"));
 });
 
+// Admin upload page
 app.get("/admin-upload", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "upload.html"));
+  res.sendFile(path.join(__dirname, "../frontend", "upload.html"));
 });
 
 // =======================
