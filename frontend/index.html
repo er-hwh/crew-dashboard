@@ -262,9 +262,29 @@ body {
     z-index: 3000;
     text-decoration: none;
   }
-
   .fab-call i {
     font-size: 1.2rem;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    height: 100%;
+    z-index: 2000;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.show {
+    left: 0;
+  }
+
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1500;
+    display: none;
   }
 }
 
