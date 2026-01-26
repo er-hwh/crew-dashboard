@@ -955,6 +955,33 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+
+async function loadWeather(code) {
+  try {
+    const res = await fetch(`/api/weather?code=${code}`);
+    const data = await res.json();
+
+    const box = document.getElementById("weatherBox");
+    if (!box) return;
+
+    box.innerHTML = `
+      <div class="card shadow-sm mt-3">
+        <div class="card-body">
+          <h5 class="mb-2">
+            ☁️ Weather — ${data.station || code}
+          </h5>
+          <div>🌡 Temp: ${data.temp} °C</div>
+          <div>💧 Humidity: ${data.humidity}%</div>
+          <div>🌧 Rain Chance: ${data.rain_chance}%</div>
+          <div>🌫 Fog: ${data.fog ? "Yes" : "No"}</div>
+        </div>
+      </div>
+    `;
+  } catch (e) {
+    console.error("WEATHER ERROR", e);
+  }
+}
+
 /* ================= LOAD DEFAULT ================= */
 document.addEventListener("DOMContentLoaded", () => {
   const firstBtn = document.querySelector(".menu button");
