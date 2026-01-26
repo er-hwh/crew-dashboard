@@ -2,12 +2,13 @@ const searchBox = document.getElementById("stationSearch");
 const suggestBox = document.getElementById("stationSuggest");
 const weatherBox = document.getElementById("weatherBox");
 
-let activeIndex = -1;
+/*let activeIndex = -1;*/
+let weatherActiveIndex = -1;
 
 /* ================= SUGGEST ================= */
 searchBox.addEventListener("input", async () => {
   const q = searchBox.value.trim();
-  activeIndex = -1;
+  weatherActiveIndex = -1;
 
   if (!q) {
     suggestBox.style.display = "none";
@@ -54,20 +55,20 @@ searchBox.addEventListener("keydown", e => {
 
   if (e.key === "ArrowDown") {
     e.preventDefault();
-    activeIndex = (activeIndex + 1) % items.length;
+    weatherActiveIndex = (weatherActiveIndex + 1) % items.length;
   } else if (e.key === "ArrowUp") {
     e.preventDefault();
-    activeIndex = (activeIndex - 1 + items.length) % items.length;
+    weatherActiveIndex = (weatherActiveIndex - 1 + items.length) % items.length;
   } else if (e.key === "Enter") {
     e.preventDefault();
-    if (activeIndex >= 0) {
-      items[activeIndex].click();
+    if (weatherActiveIndex >= 0) {
+      items[weatherActiveIndex].click();
     }
     return;
   }
 
   items.forEach((el, i) => {
-    el.style.background = i === activeIndex ? "#e8f0ff" : "";
+    el.style.background = i === weatherActiveIndex ? "#e8f0ff" : "";
   });
 });
 
