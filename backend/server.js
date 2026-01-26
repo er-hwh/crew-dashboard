@@ -16,9 +16,19 @@ const upload = multer({ dest: "uploads/" });
 
 const WEATHER_KEY = process.env.WEATHER_KEY || "23e40c2ae17c42e5805121929262401";
 
-const stations = JSON.parse(
+/*const stations = JSON.parse(
   fs.readFileSync(path.join(__dirname, "stations.json"), "utf-8")
-);
+);*/
+app.get("/stations.json", (req, res) => {
+  const filePath = path.join(__dirname, "stations.json");
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: "stations.json not found" });
+  }
+
+  res.sendFile(filePath);
+});
+
 
 // =======================
 // Upload Progress Store
