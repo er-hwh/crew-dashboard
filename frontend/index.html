@@ -340,15 +340,28 @@ body {
       <i class="fa-solid fa-ellipsis-vertical"></i>
     </button>
 
-    <input 
-      id="locationInput"
-      class="form-control form-control-sm"
-      placeholder="Enter Location / PIN"
-      style="width:160px;"
-    >
+    <div class="d-flex align-items-center gap-2 position-relative">
+      <input
+        id="stationSearch"
+        class="form-control form-control-sm"
+        placeholder="Search Station / Code"
+        autocomplete="off"
+        style="width:160px;"
+      >
 
-    <div id="weatherBox" style="font-size:0.85rem; min-width:180px;">
-      🌤️ --°C | --
+      <div
+        id="stationSuggest"
+        class="bg-white shadow rounded"
+        style="position:absolute; top:38px; right:0; z-index:3000; width:260px; max-height:220px; overflow:auto; display:none;"
+      ></div>
+
+      <div
+        id="weatherBox"
+        class="text-white"
+        style="background:rgba(255,255,255,0.15); padding:6px 10px; border-radius:10px; font-size:0.8rem; min-width:180px;"
+      >
+        🌤️ Select Station
+      </div>
     </div>
 
     <div id="clock"></div>
@@ -366,39 +379,8 @@ body {
 </div>
 </div>
 <div id="overlay" class="menu-overlay"></div>
+<script src="/weather.js"></script>
 <script>
-
-async function fetchWeatherStation(code) {
-  try {
-    const res = await fetch(`/api/weather?station=${code}`);
-    if (!res.ok) throw new Error("Station not found");
-
-    const data = await res.json();
-    const w = data.weather;
-    const s = data.station;
-
-    const rain =
-      w.forecast.forecastday[0].day.daily_chance_of_rain;
-    const vis = w.current.vis_km * 1000;
-
-    let alert = "🟢 NORMAL";
-    if (rain > 80 || vis < 500) alert = "🔴 DANGER";
-    else if (rain > 60 || vis < 1000) alert = "🟡 CAUTION";
-
-    document.getElementById("weatherBox").innerHTML = `
-      📍 ${s.name}<br>
-      🌡️ ${w.current.temp_c}°C | ${w.current.condition.text}<br>
-      🌧️ Rain: ${rain}% | 🌫️ ${alert}
-    `;
-  } catch {
-    document.getElementById("weatherBox").innerHTML = "❌ Not Found";
-  }
-}
-
-document.getElementById("locationInput").addEventListener("change", e => {
-  const code = e.target.value.trim().toUpperCase();
-  if (code) fetchWeatherStation(code);
-});
 
 const API_BASE = "http://localhost:3000";
 // later change to Render URL
