@@ -475,11 +475,21 @@ body {
 
       <div
         id="weatherBox"
-        class="text-white"
-        style="background:rgba(255,255,255,0.15); padding:6px 10px; border-radius:10px; font-size:0.8rem; min-width:180px;"
-      >
+        class="text-white d-flex align-items-center gap-2"
+        style="
+          background:rgba(255,255,255,0.15);
+          padding:6px 10px;
+          border-radius:10px;
+          font-size:0.8rem;
+          min-width:230px;
+          max-width:230px;
+          white-space:nowrap;
+          overflow:hidden;
+          text-overflow:ellipsis;
+        ">
         🌤️ Select Station
       </div>
+
     </div>
 
     <div id="clock"></div>
@@ -974,29 +984,39 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-async function loadWeather(code) {
+async function loadWeather(station) {
+  const box = document.getElementById("weatherBox");
+
+  if (!station || !station.location) {
+    box.innerHTML = "🌤️ Select Station";
+    return;
+  }
+
+  box.innerHTML = "⏳ Loading...";
+
   try {
-    const res = await fetch(`/api/weather?code=${code}`);
+    const res = await fetch(
+      `/api/weather?loc=${encodeURIComponent(station.location)}`
+    );
+
     const data = await res.json();
 
-    const box = document.getElementById("weatherBox");
-    if (!box) return;
+    if (!data.main) {
+      throw new Error("Weather data missing");
+    }
+
+    const temp = Math.round(data.main.temp);
+    const hum = data.main.humidity;
+    const cond = data.weather?.[0]?.main || "Clear";
 
     box.innerHTML = `
-      <div class="card shadow-sm mt-3">
-        <div class="card-body">
-          <h5 class="mb-2">
-            ☁️ Weather — ${data.station || code}
-          </h5>
-          <div>🌡 Temp: ${data.temp} °C</div>
-          <div>💧 Humidity: ${data.humidity}%</div>
-          <div>🌧 Rain Chance: ${data.rain_chance}%</div>
-          <div>🌫 Fog: ${data.fog ? "Yes" : "No"}</div>
-        </div>
-      </div>
+      🌡️ ${temp}°C
+      💧 ${hum}%
+      🌥️ ${cond}
     `;
-  } catch (e) {
-    console.error("WEATHER ERROR", e);
+  } catch (err) {
+    console.error("Weather error:", err);
+    box.innerHTML = "⚠️ Weather Unavailable";
   }
 }
 
