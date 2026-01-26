@@ -492,14 +492,6 @@ body {
 <script src="/weather.js"></script>
 <script>
 
-let STATION_MAP = {};
-
-async function loadStations() {
-  const res = await fetch("/stations.json");
-  const data = await res.json();
-  STATION_MAP = data;
-}
-
 const API_BASE = "http://localhost:3000";
 // later change to Render URL
 
@@ -839,23 +831,14 @@ function showSuggestions(list, q) {
   box.style.display = "block";
 }
 
-function selectStation(code) {
-  console.log("Station selected:", code);
-
+function selectStation(code, name) {
   const input = document.getElementById("stationSearch");
-  const box = document.getElementById("stationSuggest");
+  const box = document.getElementById("suggestions");
 
   input.value = code;
   box.style.display = "none";
 
-  const station = STATION_MAP[code];
-
-  if (!station) {
-    document.getElementById("weatherBox").innerHTML = "⚠️ Station not found";
-    return;
-  }
-
-  loadWeather(station); // ✅ now full object goes
+  loadWeather(code);
 }
 
 async function selectCrew(id) {
@@ -1023,16 +1006,10 @@ async function loadWeather(station) {
 =======
 >>>>>>> parent of 9b23e17 (Update index.html)
 /* ================= LOAD DEFAULT ================= */
-/*document.addEventListener("DOMContentLoaded", () => {
-  const firstBtn = document.querySelector(".menu button");
-  loadCrewModule(firstBtn);
-});*/
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadStations();
+document.addEventListener("DOMContentLoaded", () => {
   const firstBtn = document.querySelector(".menu button");
   loadCrewModule(firstBtn);
 });
-
 
 </script>
 
