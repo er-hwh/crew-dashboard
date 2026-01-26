@@ -372,6 +372,28 @@ body {
   display: none;
 }
 
+#stationSuggestions {
+  position: absolute;
+  background: #ffffff;
+  color: #000;
+  width: 300px;
+  max-height: 250px;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 9999;
+}
+
+#stationSuggestions div {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+#stationSuggestions div:hover {
+  background: #0d6efd;
+  color: white;
+}
+
 </style>
 </head>
 <body>
@@ -760,12 +782,12 @@ function showSuggestions(list, q) {
   if (!list || !list.length) {
     box.innerHTML = `
       <div class="result-header">
-        Search Results — 0 found
+        Station Results — 0 found
       </div>
       <div class="list-group-item text-center text-muted py-4">
         <i class="fa-solid fa-circle-exclamation fa-2x mb-2"></i>
-        <div class="fw-semibold">No Data Found</div>
-        <small>Try changing filters or search keywords</small>
+        <div class="fw-semibold">No Station Found</div>
+        <small>Try station code or name (ex: RPH, Rampurhat)</small>
       </div>
     `;
     box.style.display = "block";
@@ -774,38 +796,39 @@ function showSuggestions(list, q) {
 
   box.innerHTML = `
     <div class="result-header">
-      Search Results — ${list.length} found
+      Station Results — ${list.length} found
     </div>
   ` + list.map(item => `
     <div class="list-group-item suggest-item d-flex justify-content-between align-items-center"
-      onclick="selectCrew('${item.crew_id}')">
+      onclick="selectStation('${item.code}', '${item.name}')">
 
       <div class="text-truncate">
-        <b>${highlight(item.crew_id, q)}</b>
+        <b>${highlight(item.code, q)}</b>
         <span class="ms-2">
-          ${highlight(item.crew_name || "", q)}
-          <span class="text-primary fw-semibold">
-            — ${item.designation || "N/A"}
-          </span>
-          <span class="text-muted">
-            — ${item.mobile ? formatMobile(item.mobile) : "No mobile"}
+          ${highlight(item.name || "", q)}
+          <span class="text-primary fw-semibold ms-2">
+            — ${item.division || "ER"}
           </span>
         </span>
       </div>
 
-      ${
-        item.mobile
-          ? `<a href="tel:+91${formatMobile(item.mobile)}"
-                class="btn btn-sm btn-success ms-2"
-                onclick="event.stopPropagation()">
-                <i class="fa-solid fa-phone"></i>
-             </a>`
-          : ``
-      }
+      <span class="badge bg-secondary ms-2">
+        ${item.category || ""}
+      </span>
     </div>
   `).join("");
 
   box.style.display = "block";
+}
+
+function selectStation(code, name) {
+  const input = document.getElementById("stationSearch");
+  const box = document.getElementById("suggestions");
+
+  input.value = code;
+  box.style.display = "none";
+
+  loadWeather(code);
 }
 
 async function selectCrew(id) {
