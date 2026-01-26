@@ -1,10 +1,3 @@
-const fs = require("fs");
-const WEATHER_KEY = process.env.WEATHER_KEY || "23e40c2ae17c42e5805121929262401";
-
-const stations = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "stations.json"), "utf-8")
-);
-
 require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
@@ -12,12 +5,20 @@ const cors = require("cors");
 const path = require("path");
 const XLSX = require("xlsx");
 
+const fs = require("fs");
+
 const { parseAndSave, setProgressRef } = require("./excelParser");
 const pool = require("./db");
 
 const app = express();
 app.use(express.static(path.join(__dirname, "../frontend")));
 const upload = multer({ dest: "uploads/" });
+
+const WEATHER_KEY = process.env.WEATHER_KEY || "23e40c2ae17c42e5805121929262401";
+
+const stations = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "stations.json"), "utf-8")
+);
 
 // =======================
 // Upload Progress Store
