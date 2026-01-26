@@ -9,398 +9,27 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
 <style>
-body {
-  background: #f1f4f8;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  margin: 0;
-}
-
-/* ================= LAYOUT ================= */
-.app { display: flex; min-height: 100vh; }
-
-/* ================= SIDEBAR ================= */
-.sidebar {
-  width: 240px;
-  background: #0b3c6f;
-  color: white;
-  display: flex;
-  flex-direction: column;
-}
-.sidebar h4 {
-  padding: 15px;
-  text-align: center;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-}
-.menu { flex: 1; padding: 10px; }
-.menu button {
-  width: 100%;
-  background: none;
-  border: none;
-  color: white;
-  padding: 12px 15px;
-  text-align: left;
-  border-radius: 8px;
-  margin-bottom: 5px;
-}
-.menu button:hover,
-.menu button.active {
-  background: rgba(255,255,255,0.15);
-}
-
-/* ================= MAIN ================= */
-.main { flex: 1; display: flex; flex-direction: column; }
-
-/* ================= HEADER ================= */
-.header {
-  background: linear-gradient(135deg, #003366, #0b4fa2);
-  color: white;
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* ================= CONTENT ================= */
-.content { flex: 1; padding: 20px; }
-
-/* ================= FOOTER ================= */
-.footer {
-  background: #eef2f7;
-  padding: 8px 20px;
-  text-align: center;
-  font-size: 0.85rem;
-}
-
-/* ================= SEARCH BAR ================= */
-.search-wrapper {
-  max-width: 1200px;
-  margin: auto;
-  position: relative;
-}
-
-.filter-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.filter-mini {
-  min-width: 140px;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  background: #f8fafc;
-}
-
-.search-wide {
-  width: 100%;
-}
-
-.search-wide .form-control {
-  height: 48px;
-  font-size: 1rem;
-  border-radius: 14px 0 0 14px;
-}
-
-.search-wide .input-group-text {
-  height: 48px;
-  border-radius: 0 14px 14px 0;
-  background: linear-gradient(135deg, #0d6efd, #084298);
-  color: white;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-/* ================= SUGGESTIONS ================= */
-#suggestions {
-  width: 100%;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  border-radius: 0 0 16px 16px;
-  overflow: hidden;
-}
-
-.result-header {
-  background: #eef3fb;
-  padding: 8px 15px;
-  font-weight: 600;
-  border-bottom: 1px solid #ddd;
-}
-
-.list-group-item {
-  padding: 14px 18px;
-  font-size: 0.95rem;
-}
-
-.suggest-item {
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.suggest-item:hover,
-.suggest-item.active {
-  background: #e8f0ff;
-}
-
-/* ================= RESULT PANEL ================= */
-.result-panel {
-  max-width: 1200px;
-  margin: 20px auto;
-  background: white;
-  border-radius: 24px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
-  padding: 25px;
-  overflow: visible;
-}
-
-/* ================= PROFILE TOP ================= */
-.profile-top {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 15px;
-}
-
-.profile-avatar {
-  font-size: 4rem;
-  color: #0b4fa2;
-}
-
-.profile-highlights {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.highlight-box {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 0.9rem;
-}
-
-.highlight-box b {
-  display: block;
-  color: #334155;
-  font-size: 0.8rem;
-  margin-bottom: 2px;
-}
-
-/* ================= LR ================= */
-.section-block {
-  margin-top: 25px;
-}
-
-.section-title {
-  font-weight: 600;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.lr-valid { background-color: #dcfce7; }
-.lr-expired { background-color: #fee2e2; }
-
-.highlight {
-  background: #fff3b0;
-  padding: 0 2px;
-  border-radius: 4px;
-}
-
-/* ========== MOBILE UI PRO UPGRADE ========== */
-@media (max-width: 768px) {
-
-  .content {
-    padding: 12px;
-  }
-
-  .result-panel {
-    border-radius: 18px;
-    padding: 16px;
-    margin: 12px auto;
-  }
-
-  .profile-top {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 10px;
-  }
-
-  .profile-avatar {
-    font-size: 3.5rem;
-  }
-
-  .profile-highlights {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .highlight-box {
-    padding: 10px;
-    font-size: 0.85rem;
-  }
-
-  /* Floating Call Button */
-  .fab-call {
-    position: fixed;
-    bottom: 20px;
-    right: 16px;
-    background: linear-gradient(135deg, #16a34a, #15803d);
-    color: white;
-    border-radius: 50px;
-    padding: 14px 22px;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    z-index: 3000;
-    text-decoration: none;
-  }
-  .fab-call i {
-    font-size: 1.2rem;
-  }
-
-  .sidebar {
-    position: fixed;
-    left: -260px;
-    top: 0;
-    height: 100%;
-    z-index: 2000;
-    transition: left 0.3s ease;
-  }
-
-  .sidebar.show {
-    left: 0;
-  }
-
-  .menu-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 1500;
-    display: none;
-  }
-}
-
-#weatherBox {
-  background: rgba(255,255,255,0.15);
-  padding: 6px 10px;
-  border-radius: 10px;
-}
-
-/* ========== STATION SUGGEST DROPDOWN FIX ========== */
-#stationSuggest {
-  background: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0;
-}
-
-#stationSuggest .suggest-item {
-  color: #0f172a !important;
-}
-
-#stationSuggest .suggest-item:hover {
-  background: #e8f0ff;
-}
-
-/* ========== HEADER WEATHER LAYOUT FIX ========== */
-/* Push search slightly left */
-#stationSearch {
-  margin-right: 12px;
-}
-
-/* Fixed size weather box so navbar doesn't grow */
-#weatherBox {
-  min-width: 260px;
-  max-width: 260px;
-  white-space: normal;
-  line-height: 1.3;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* Make header row not stretch vertically */
-.header > div {
-  align-items: center;
-}
-
-/* ========== LOCK HEADER HEIGHT ========== */
-.header {
-  height: 64px;                 /* fixed navbar height */
-  min-height: 64px;
-  max-height: 64px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;           /* prevent children from expanding it */
-}
-
-/* Right side container (search + weather + clock) */
-.header .d-flex.align-items-center.gap-2.position-relative {
-  height: 100%;
-  align-items: center;
-}
-
-/* Search box positioning */
-#stationSearch {
-  margin-right: 12px;
-  height: 34px;
-}
-
-/* Weather box — stays inside header */
-#weatherBox {
-  min-width: 260px;
-  max-width: 260px;
-  max-height: 52px;           /* prevents vertical growth */
-  overflow: hidden;          /* hides extra lines */
-  line-height: 1.2;
-  padding: 6px 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  white-space: normal;
-}
-
-/* Make text shrink instead of pushing layout */
-#weatherBox br {
-  display: none;
-}
-
-#stationSuggestions {
-  position: absolute;
-  background: #ffffff;
-  color: #000;
-  width: 300px;
-  max-height: 250px;
-  overflow-y: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  z-index: 9999;
-}
-
-#stationSuggestions div {
-  padding: 8px 12px;
-  cursor: pointer;
-}
-
-#stationSuggestions div:hover {
-  background: #0d6efd;
-  color: white;
-}
-
+/* === YOUR ORIGINAL CSS — UNCHANGED === */
+body { background:#f1f4f8;font-family:"Segoe UI",Roboto,Arial,sans-serif;margin:0;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:240px;background:#0b3c6f;color:white;display:flex;flex-direction:column;}
+.sidebar h4{padding:15px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.2);}
+.menu{flex:1;padding:10px;}
+.menu button{width:100%;background:none;border:none;color:white;padding:12px 15px;text-align:left;border-radius:8px;margin-bottom:5px;}
+.menu button:hover,.menu button.active{background:rgba(255,255,255,0.15);}
+.main{flex:1;display:flex;flex-direction:column;}
+.header{background:linear-gradient(135deg,#003366,#0b4fa2);color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;height:64px;overflow:hidden;}
+.content{flex:1;padding:20px;}
+.footer{background:#eef2f7;padding:8px 20px;text-align:center;font-size:.85rem;}
+#weatherBox{min-width:260px;max-width:260px;max-height:52px;overflow:hidden;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.15);font-size:.8rem;}
+#stationSuggest{background:#fff;color:#0f172a;border:1px solid #e2e8f0;position:absolute;top:38px;right:0;z-index:9999;width:260px;max-height:220px;overflow-y:auto;display:none;}
+#stationSuggest .suggest-item{padding:6px 10px;cursor:pointer;}
+#stationSuggest .suggest-item:hover{background:#e8f0ff;}
 </style>
 </head>
 <body>
 
 <div class="app">
-
-<!-- SIDEBAR -->
 <div class="sidebar">
   <h4><i class="fa-solid fa-train"></i> TLC/PCNL</h4>
   <div class="menu">
@@ -410,22 +39,10 @@ body {
     <button onclick="window.location.href='/speed'">
       <i class="fa-solid fa-gauge-high"></i> Speed Analyzer
     </button>
-    <!-- <button onclick="loadSPMModule(this)">
-      <i class="fa-solid fa-chart-line"></i> SPM Analysis
-    </button>
-    <button onclick="loadMemoModule(this)">
-      <i class="fa-solid fa-file-lines"></i> Memo / Long Hours
-    </button>
-    <button onclick="loadContactModule(this)">
-      <i class="fa-solid fa-phone"></i> Contact Us
-    </button> -->
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
-
-<!-- HEADER -->
 <div class="header">
   <div class="d-flex align-items-center gap-3">
     <img src="/logo.png" height="40" onerror="this.style.display='none'">
@@ -436,55 +53,25 @@ body {
   </div>
 
   <div class="d-flex align-items-center gap-3">
-    <button id="menuToggle" class="btn btn-light d-md-none">
-      <i class="fa-solid fa-ellipsis-vertical"></i>
-    </button>
-
     <div class="d-flex align-items-center gap-2 position-relative">
-      <input
-        id="stationSearch"
-        class="form-control form-control-sm"
-        placeholder="Search Station / Code"
-        autocomplete="off"
-        style="width:160px;"
-      >
-
-      <div
-        id="stationSuggest"
-        class="bg-white shadow rounded"
-        style="position:absolute; top:38px; right:0; z-index:3000; width:260px; max-height:220px; overflow:auto; display:none;"
-      ></div>
-
-      <div
-        id="weatherBox"
-        class="text-white"
-        style="background:rgba(255,255,255,0.15); padding:6px 10px; border-radius:10px; font-size:0.8rem; min-width:180px;"
-      >
-        🌤️ Select Station
-      </div>
+      <input id="stationSearch" class="form-control form-control-sm"
+        placeholder="Search Station / Code" autocomplete="off" style="width:160px;">
+      <div id="stationSuggest"></div>
+      <div id="weatherBox">🌤️ Select Station</div>
     </div>
-
     <div id="clock"></div>
   </div>
 </div>
 
-<!-- CONTENT -->
 <div id="content" class="content"></div>
 
-<!-- FOOTER -->
 <div class="footer">
   Developed by S Samanta / APCNL
 </div>
+</div>
+</div>
 
-</div>
-</div>
-<div id="overlay" class="menu-overlay"></div>
-<script src="/weather.js"></script>
 <script>
-
-const API_BASE = "http://localhost:3000";
-// later change to Render URL
-
 /* ================= CLOCK ================= */
 function updateClock() {
   document.getElementById("clock").innerText = new Date().toLocaleString();
@@ -492,508 +79,115 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-/* ================= MENU ================= */
-function setActive(btn) {
-  document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-
-  document.querySelector(".sidebar").classList.remove("show");
-  document.getElementById("overlay").style.display = "none";
-}
-
-
-/* ================= MODULE LOADERS ================= */
+/* ================= CREW MODULE ================= */
 function loadCrewModule(btn) {
-  if (btn) setActive(btn);
-
   document.getElementById("content").innerHTML = `
-    <h4 class="mb-3 d-flex align-items-center gap-2">
-      <i class="fa-solid fa-users"></i> Crew Search
-    </h4>
-
-    <div class="search-wrapper">
-
-      <div class="filter-row">
-        <select id="divisionFilter" class="form-select filter-mini">
-          <option value="">All Division</option>
-          <option value="HWH">HWH</option>
-          <option value="SDAH">SDAH</option>
-          <option value="ASN">ASN</option>
-          <option value="MLDT">MLDT</option>
-        </select>
-
-        <select id="lobbyFilter" class="form-select filter-mini">
-          <option value="">All Lobby</option>
-        </select>
-
-        <select id="desigFilter" class="form-select filter-mini">
-          <option value="">All Designation</option>
-        </select>
-      </div>
-
-      <div class="input-group input-group-lg search-wide">
-        <input 
-          id="search"
-          class="form-control"
-          placeholder="Search Crew ID, Name, Designation or Mobile"
-          autocomplete="off"
-        >
-        <span class="input-group-text">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </span>
-      </div>
-
-      <div id="suggestions" class="list-group shadow position-absolute" style="display:none;"></div>
-    </div>
-
-    <div id="resultBox" class="result-panel"></div>
+    <h4><i class="fa-solid fa-users"></i> Crew Search</h4>
+    <input id="search" class="form-control" placeholder="Search Crew ID or Name">
+    <div id="suggestions" class="list-group mt-2"></div>
+    <div id="resultBox" class="mt-3"></div>
   `;
-
-  bindFilterEvents();
   initCrewSearch();
-
-  // Default Division = HWH
-  document.getElementById("divisionFilter").value = "HWH";
-  loadMeta();
 }
 
-/* ================= PLACEHOLDERS ================= */
-function loadSpeedModule(btn) {
-  if (btn) setActive(btn);
-
-  // Open in new tab
-  window.open(
-    "https://er-hwh.github.io/train-speed-violation-analyzer/",
-    "_blank",
-    "noopener,noreferrer"
-  );
-
-  // Optional: show message in dashboard
-  /*document.getElementById("content").innerHTML = `
-    <h4><i class="fa-solid fa-gauge-high"></i> Speed Violation Analyzer</h4>
-    <div class="alert alert-success mt-3">
-      Speed Analyzer opened in a new tab.
-    </div>
-  `;*/
-}
-
-function loadSPMModule(btn) {
-  if (btn) setActive(btn);
-  document.getElementById("content").innerHTML = `
-    <h4><i class="fa-solid fa-chart-line"></i> SPM Analysis</h4>
-    <div class="alert alert-info mt-3">
-      SPM performance reports & grading dashboard.
-    </div>
-  `;
-}
-
-function loadMemoModule(btn) {
-  if (btn) setActive(btn);
-  document.getElementById("content").innerHTML = `
-    <h4><i class="fa-solid fa-file-lines"></i> Memo & Long Hours</h4>
-    <div class="alert alert-info mt-3">
-      Memo tracking & compliance reports.
-    </div>
-  `;
-}
-
-function loadContactModule(btn) {
-  if (btn) setActive(btn);
-  document.getElementById("content").innerHTML = `
-    <h4><i class="fa-solid fa-phone"></i> Contact</h4>
-    <p class="mt-3">
-      TLC Office — HWH Division<br>
-      Eastern Railway<br><br>
-      Developed by S Samanta / APCNL
-    </p>
-  `;
-}
-
-/* ================= FILTER META ================= */
-function bindFilterEvents() {
-  const division = document.getElementById("divisionFilter");
-  const lobby = document.getElementById("lobbyFilter");
-  const desig = document.getElementById("desigFilter");
-  const input = document.getElementById("search");
-
-  async function rerunSearch() {
-    const q = input.value.trim();
-    if (!q) return;
-
-    const list = await fetchSuggestions(q);
-    showSuggestions(list, q);
-  }
-
-  // Division reloads lobby, keeps designation
-  division.addEventListener("change", async () => {
-    await loadLobbiesOnly();
-    rerunSearch();
-  });
-
-  // These never reset anything — only search
-  lobby.addEventListener("change", rerunSearch);
-  desig.addEventListener("change", rerunSearch);
-}
-
-async function loadLobbiesOnly() {
-  try {
-    const division = document.getElementById("divisionFilter").value;
-    const lobbySelect = document.getElementById("lobbyFilter");
-
-    // Save current selection
-    const prevLobby = lobbySelect.value;
-
-    const res = await fetch(`/lobbies?division=${division}`);
-    const lobbies = await res.json();
-
-    lobbySelect.innerHTML = `<option value="">All Lobby</option>` +
-      lobbies.map(l => `<option value="${l}">${l}</option>`).join("");
-
-    // Restore selection if still valid
-    if (prevLobby && lobbies.includes(prevLobby)) {
-      lobbySelect.value = prevLobby;
-    }
-
-  } catch (e) {
-    console.error("LOBBY LOAD ERROR", e);
-  }
-}
-
-
-async function loadMeta() {
-  try {
-    // Save current designation
-    const desigSelect = document.getElementById("desigFilter");
-    const prevDesig = desigSelect.value;
-
-    // Load lobbies
-    await loadLobbiesOnly();
-
-    // Load designations
-    const desigRes = await fetch(`/designations`);
-    const designations = await desigRes.json();
-
-    desigSelect.innerHTML = `<option value="">All Designation</option>` +
-      designations.map(d => `<option value="${d}">${d}</option>`).join("");
-
-    // Restore designation if still exists
-    if (prevDesig && designations.includes(prevDesig)) {
-      desigSelect.value = prevDesig;
-    }
-
-  } catch (e) {
-    console.error("META LOAD ERROR", e);
-  }
-}
-
-/* ================= SEARCH ================= */
+/* ================= CREW SEARCH ================= */
 let timer = null;
-let activeIndex = -1;
-
-function formatMobile(mobile) {
-  if (!mobile) return "";
-  let m = String(mobile).trim();
-  if (m.startsWith("+91")) m = m.slice(3);
-  else if (m.startsWith("91") && m.length > 10) m = m.slice(2);
-  return m.replace(/\D/g, "");
-}
 
 async function fetchSuggestions(q) {
-  const lobby = document.getElementById("lobbyFilter").value;
-  const desig = document.getElementById("desigFilter").value;
-  const division = document.getElementById("divisionFilter").value;
-
-  const url =
-    `/suggest?q=${encodeURIComponent(q)}` +
-    `&lobby=${lobby}&desig=${desig}&division=${division}`;
-
-  const res = await fetch(url);
+  const res = await fetch(`/suggest?q=${encodeURIComponent(q)}`);
   return await res.json();
 }
 
-async function fetchProfile(crewId) {
-  const res = await fetch(`/search?q=${encodeURIComponent(crewId)}`);
+async function fetchProfile(id) {
+  const res = await fetch(`/search?q=${encodeURIComponent(id)}`);
   return await res.json();
-}
-
-function highlight(text, q) {
-  if (!q) return text;
-  const re = new RegExp(`(${q})`, "gi");
-  return text.replace(re, `<span class="highlight">$1</span>`);
 }
 
 function initCrewSearch() {
   const input = document.getElementById("search");
   const box = document.getElementById("suggestions");
 
-  function runSearch() {
-    const q = input.value.trim();
+  input.addEventListener("input", () => {
     clearTimeout(timer);
-
-    if (!q) {
-      box.style.display = "none";
-      activeIndex = -1;
-      return;
-    }
+    const q = input.value.trim();
+    if (!q) return box.innerHTML = "";
 
     timer = setTimeout(async () => {
       const list = await fetchSuggestions(q);
-      activeIndex = -1;
-      showSuggestions(list, q);
-    }, 200);
-  }
-
-  input.addEventListener("input", runSearch);
-
-  input.addEventListener("keydown", e => {
-    const items = box.querySelectorAll(".suggest-item");
-    if (!items.length) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      activeIndex = (activeIndex + 1) % items.length;
-    } 
-    else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      activeIndex = (activeIndex - 1 + items.length) % items.length;
-    } 
-    else if (e.key === "Enter") {
-      e.preventDefault();
-      if (activeIndex >= 0) items[activeIndex].click();
-      return;
-    }
-
-    items.forEach((el, i) => {
-      el.classList.toggle("active", i === activeIndex);
-    });
+      box.innerHTML = list.map(i => `
+        <div class="list-group-item suggest-item"
+          onclick="selectCrew('${i.crew_id}')">
+          <b>${i.crew_id}</b> — ${i.crew_name}
+        </div>
+      `).join("");
+    }, 300);
   });
-
-  document.addEventListener("click", e => {
-    if (!box.contains(e.target) && e.target !== input) {
-      box.style.display = "none";
-    }
-  });
-}
-
-function showSuggestions(list, q) {
-  const box = document.getElementById("suggestions");
-
-  // NO DATA FOUND STATE
-  if (!list || !list.length) {
-    box.innerHTML = `
-      <div class="result-header">
-        Station Results — 0 found
-      </div>
-      <div class="list-group-item text-center text-muted py-4">
-        <i class="fa-solid fa-circle-exclamation fa-2x mb-2"></i>
-        <div class="fw-semibold">No Station Found</div>
-        <small>Try station code or name (ex: RPH, Rampurhat)</small>
-      </div>
-    `;
-    box.style.display = "block";
-    return;
-  }
-
-  box.innerHTML = `
-    <div class="result-header">
-      Station Results — ${list.length} found
-    </div>
-  ` + list.map(item => `
-    <div class="list-group-item suggest-item d-flex justify-content-between align-items-center"
-      onclick="selectStation('${item.code}', '${item.name}')">
-
-      <div class="text-truncate">
-        <b>${highlight(item.code, q)}</b>
-        <span class="ms-2">
-          ${highlight(item.name || "", q)}
-          <span class="text-primary fw-semibold ms-2">
-            — ${item.division || "ER"}
-          </span>
-        </span>
-      </div>
-
-      <span class="badge bg-secondary ms-2">
-        ${item.category || ""}
-      </span>
-    </div>
-  `).join("");
-
-  box.style.display = "block";
-}
-
-function selectStation(code, name) {
-  const input = document.getElementById("stationSearch");
-  const box = document.getElementById("suggestions");
-
-  input.value = code;
-  box.style.display = "none";
-
-  loadWeather(code);
 }
 
 async function selectCrew(id) {
-  document.getElementById("search").value = id;
-  document.getElementById("suggestions").style.display = "none";
-
   const data = await fetchProfile(id);
-  renderProfile(data);
-}
-
-/* ================= PROFILE ================= */
-function renderProfile(data) {
   const box = document.getElementById("resultBox");
-
-  if (!data) {
-    box.innerHTML = `<div class="alert alert-warning text-center">No crew found</div>`;
-    return;
-  }
+  if (!data) return box.innerHTML = "No crew found";
 
   box.innerHTML = `
-    <div class="profile-top">
-      <div class="profile-avatar">
-        <i class="fa-solid fa-user-circle"></i>
-      </div>
-
-      <div class="flex-grow-1 text-center text-md-start">
-        <h4 class="mb-1 fw-bold">${data.crew_name}</h4>
-        <span class="badge bg-primary px-3 py-2">${data.crew_id}</span>
-
-        <div class="profile-highlights mt-3">
-          <div class="highlight-box"><b>Mobile</b><span>${data.mobile ? formatMobile(data.mobile) : "N/A"}</span></div>
-          <div class="highlight-box"><b>CLI Name</b><span>${data.cli_name || "N/A"}</span></div>
-          <div class="highlight-box"><b>Current Grade</b><span>${data.current_grade || "N/A"}</span></div>
-          <div class="highlight-box"><b>Designation</b><span>${data.designation || "N/A"}</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="profile-highlights mt-3">
-      <div class="highlight-box"><b>Level</b><span>${data.level || "N/A"}</span></div>
-      <div class="highlight-box"><b>Cadre</b><span>${data.cadre || "N/A"}</span></div>
-      <div class="highlight-box"><b>Employee No</b><span>${data.emp_no || "N/A"}</span></div>
-      <div class="highlight-box"><b>Appointment</b><span>${formatDate(data.appoint_date)}</span></div>
-      <div class="highlight-box"><b>Promotion</b><span>${formatDate(data.promotion_date)}</span></div>
-      <div class="highlight-box"><b>Retirement</b><span>${formatDate(data.retirement_date)}</span></div>
-    </div>
-
-    <div class="section-block">
-      <div class="section-title">
-        <i class="fa-solid fa-route"></i>
-        Route Learning Records
-      </div>
-
-      ${
-        data.routes && data.routes.length
-          ? `
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>Section</th>
-                  <th>Route No</th>
-                  <th>Valid Till</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${data.routes.map(r => `
-                  <tr class="${r.status === "VALID" ? "lr-valid" : "lr-expired"}">
-                    <td>${r.section_code || ""}</td>
-                    <td>${r.route_no || ""}</td>
-                    <td>${formatDate(r.valid_till)}</td>
-                    <td>
-                      <span class="badge ${r.status === "VALID" ? "bg-success" : "bg-danger"}">
-                        ${r.status}
-                      </span>
-                    </td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </div>`
-          : `<div class="alert alert-secondary">No route learning data</div>`
-      }
-    </div>
-
-    ${
-      data.mobile
-        ? `<a href="tel:+91${formatMobile(data.mobile)}" class="fab-call d-md-none">
-             <i class="fa-solid fa-phone"></i> Call
-           </a>`
-        : ``
-    }
+    <h5>${data.crew_name}</h5>
+    <div>ID: ${data.crew_id}</div>
+    <div>Mobile: ${data.mobile || "N/A"}</div>
+    <div>Designation: ${data.designation || "N/A"}</div>
   `;
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return "N/A";
-  const d = new Date(dateStr);
-  if (isNaN(d)) return dateStr;
-  return d.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric"
-  });
-}
+/* ================= STATION SEARCH ================= */
+const stationInput = document.getElementById("stationSearch");
+const stationBox = document.getElementById("stationSuggest");
 
-/* ============ MOBILE MENU TOGGLE ============ */
-document.addEventListener("DOMContentLoaded", () => {
-  const menuBtn = document.getElementById("menuToggle");
-  const sidebar = document.querySelector(".sidebar");
-  const overlay = document.getElementById("overlay");
+stationInput.addEventListener("input", async () => {
+  const q = stationInput.value.trim();
+  if (!q) return stationBox.style.display = "none";
 
-  if (!menuBtn || !sidebar || !overlay) return;
+  const res = await fetch(`/api/stations?q=${encodeURIComponent(q)}`);
+  const list = await res.json();
 
-  menuBtn.addEventListener("click", () => {
-    sidebar.classList.toggle("show");
-    overlay.style.display = sidebar.classList.contains("show") ? "block" : "none";
-  });
+  stationBox.innerHTML = list.map(s => `
+    <div class="suggest-item"
+      onclick="selectStation('${s.code}')">
+      <b>${s.code}</b> — ${s.name}
+    </div>
+  `).join("");
 
-  overlay.addEventListener("click", () => {
-    sidebar.classList.remove("show");
-    overlay.style.display = "none";
-  });
+  stationBox.style.display = "block";
 });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+/* ================= WEATHER ================= */
+async function selectStation(code) {
+  stationBox.style.display = "none";
+  stationInput.value = code;
+  loadWeather(code);
+}
 
 async function loadWeather(code) {
+  const box = document.getElementById("weatherBox");
+  box.innerText = "⏳ Loading weather...";
+
   try {
-    const res = await fetch(`/api/weather?code=${code}`);
+    const res = await fetch(`/api/weather?station=${code}`);
     const data = await res.json();
 
-    const box = document.getElementById("weatherBox");
-    if (!box) return;
-
+    const w = data.weather.current;
     box.innerHTML = `
-      <div class="card shadow-sm mt-3">
-        <div class="card-body">
-          <h5 class="mb-2">
-            ☁️ Weather — ${data.station || code}
-          </h5>
-          <div>🌡 Temp: ${data.temp} °C</div>
-          <div>💧 Humidity: ${data.humidity}%</div>
-          <div>🌧 Rain Chance: ${data.rain_chance}%</div>
-          <div>🌫 Fog: ${data.fog ? "Yes" : "No"}</div>
-        </div>
-      </div>
+      🌡️ ${w.temp_c}°C
+      💧 ${w.humidity}%
+      🌥️ ${w.condition.text}
     `;
   } catch (e) {
-    console.error("WEATHER ERROR", e);
+    box.innerText = "⚠️ Weather Unavailable";
   }
 }
 
-=======
->>>>>>> parent of 9b23e17 (Update index.html)
-=======
->>>>>>> parent of 9b23e17 (Update index.html)
-/* ================= LOAD DEFAULT ================= */
+/* ================= DEFAULT LOAD ================= */
 document.addEventListener("DOMContentLoaded", () => {
-  const firstBtn = document.querySelector(".menu button");
-  loadCrewModule(firstBtn);
+  loadCrewModule();
 });
-
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

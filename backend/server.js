@@ -4,18 +4,21 @@ const multer = require("multer");
 const cors = require("cors");
 const path = require("path");
 const XLSX = require("xlsx");
-
 const fs = require("fs");
+const fetch = require("node-fetch");
 
 const { parseAndSave, setProgressRef } = require("./excelParser");
 const pool = require("./db");
 
 const app = express();
-app.use(express.static(path.join(__dirname, "../frontend")));
 const upload = multer({ dest: "uploads/" });
 
-const WEATHER_KEY = process.env.WEATHER_KEY || "23e40c2ae17c42e5805121929262401";
+const WEATHER_KEY =
+  process.env.WEATHER_KEY || "23e40c2ae17c42e5805121929262401";
 
+// =======================
+// Load Stations DB
+// =======================
 const stations = JSON.parse(
   fs.readFileSync(path.join(__dirname, "stations.json"), "utf-8")
 );
@@ -36,23 +39,19 @@ let uploadProgress = {
 // =======================
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "../frontend")));
 
 // =======================
 // Serve Frontend
 // =======================
-
-// Serve frontend folder
-app.use(express.static(path.join(__dirname, "../frontend")));
-
-// Home page
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "index.html"));
 });
 
-// Admin upload page
 app.get("/admin-upload", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "upload.html"));
 });
+
 app.get("/speed", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "speed.html"));
 });
@@ -78,7 +77,6 @@ app.post("/upload", upload.array("files"), async (req, res) => {
     uploadProgress.processed = 0;
     uploadProgress.total = 0;
 
-    // Estimate total rows
     for (const file of req.files) {
       const wb = XLSX.readFile(file.path);
       for (const sheetName of wb.SheetNames) {
@@ -90,7 +88,6 @@ app.post("/upload", upload.array("files"), async (req, res) => {
 
     setProgressRef(uploadProgress);
 
-    // Parse files
     for (const file of req.files) {
       uploadProgress.currentFile = file.originalname;
       console.log("Processing:", file.originalname);
@@ -115,12 +112,9 @@ app.post("/upload", upload.array("files"), async (req, res) => {
 });
 
 // =======================
-// SUGGEST API (FAST + RULE-BASED FILTERING)
-// RULES:
-// - Division = TEXT PART of CLI ID (HWH3463 → HWH)
-// - Lobby   = TEXT PART of CREW ID (RPH3020 → RPH)
+// CREW SUGGEST API
 // =======================
-app.get("/suggest", async (req, res) => {
+async function crewSuggestHandler(req, res) {
   try {
     const q = req.query.q || "";
     const lobby = req.query.lobby || "";
@@ -136,23 +130,18 @@ app.get("/suggest", async (req, res) => {
     let values = [param, prefixParam];
     let idx = 3;
 
-    // DESIGNATION FILTER
     if (desig) {
       filters.push(`designation = $${idx}`);
       values.push(desig);
       idx++;
     }
 
-    // LOBBY FILTER
-    // Crew ID TEXT PART (RPH3020 -> RPH)
     if (lobby) {
       filters.push(`SUBSTRING(crew_id FROM '^[A-Z]+') = $${idx}`);
       values.push(lobby);
       idx++;
     }
 
-    // DIVISION FILTER
-    // CLI ID TEXT PART (HWH3463 -> HWH)
     if (division) {
       filters.push(`SUBSTRING(cli_id FROM '^[A-Z]+') = $${idx}`);
       values.push(division);
@@ -196,117 +185,20 @@ app.get("/suggest", async (req, res) => {
     console.error("SUGGEST ERROR:", err);
     res.status(500).json([]);
   }
-});
+}
+
+// Old + API paths both supported
+app.get("/suggest", crewSuggestHandler);
+app.get("/api/suggest", crewSuggestHandler);
 
 // =======================
-// DYNAMIC LOBBY API (FIXED)
+// FULL CREW PROFILE
 // =======================
-app.get("/lobbies", async (req, res) => {
-  try {
-    const division = req.query.division || "";
-
-    let sql = `
-      SELECT DISTINCT
-        SUBSTRING(crew_id FROM '^[A-Z]+') AS lobby
-      FROM crew_master
-      WHERE crew_id IS NOT NULL
-    `;
-
-    const values = [];
-
-    // Filter by division using CLI ID
-    if (division) {
-      sql += ` AND cli_id ILIKE $1`;
-      values.push(`%${division}%`);
-    }
-
-    sql += ` ORDER BY lobby`;
-
-    const result = await pool.query(sql, values);
-
-    res.json(
-      result.rows
-        .map(r => r.lobby)
-        .filter(l => l && l.length >= 2) // removes AZ1, junk
-    );
-  } catch (err) {
-    console.error("LOBBY API ERROR:", err);
-    res.status(500).json([]);
-  }
-});
-
-// =======================
-// DYNAMIC DESIGNATION API
-// =======================
-app.get("/designations", async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT DISTINCT designation
-      FROM crew_master
-      WHERE designation IS NOT NULL
-        AND designation <> ''
-      ORDER BY designation
-    `);
-
-    res.json(result.rows.map(r => r.designation));
-  } catch (err) {
-    console.error("DESIGNATION API ERROR:", err);
-    res.status(500).json([]);
-  }
-});
-
-
-// =======================
-// META API (Dropdown Data)
-// =======================
-// Returns:
-// - Lobbies   = TEXT PART of CREW ID
-// - Designations = DISTINCT designation
-// - Divisions = TEXT PART of CLI ID
-// =======================
-app.get("/meta", async (req, res) => {
-  try {
-    // DESIGNATIONS
-    const desigResult = await pool.query(`
-      SELECT DISTINCT designation
-      FROM crew_master
-      WHERE designation IS NOT NULL AND designation <> ''
-      ORDER BY designation
-    `);
-
-    // LOBBIES (TEXT PART OF CREW_ID)
-    const lobbyResult = await pool.query(`
-      SELECT DISTINCT
-        REGEXP_REPLACE(crew_id, '\\d{4}$', '') AS lobby
-      FROM crew_master
-      WHERE crew_id ~ '\\d{4}$'
-      ORDER BY lobby
-    `);
-
-    res.json({
-      designations: desigResult.rows.map(r => r.designation),
-      lobbies: lobbyResult.rows.map(r => r.lobby)
-    });
-
-  } catch (err) {
-    console.error("META ERROR:", err);
-    res.status(500).json({
-      designations: [],
-      lobbies: []
-    });
-  }
-});
-
-
-// =======================
-// Full Profile API
-// =======================
-app.get("/search", async (req, res) => {
+async function crewSearchHandler(req, res) {
   try {
     const crewId = req.query.q;
     if (!crewId) return res.json(null);
 
-    // Crew master
     const crew = await pool.query(
       `SELECT * FROM crew_master WHERE crew_id = $1`,
       [crewId]
@@ -314,7 +206,6 @@ app.get("/search", async (req, res) => {
 
     if (!crew.rows.length) return res.json(null);
 
-    // Route learning
     const routes = await pool.query(
       `
       SELECT
@@ -337,46 +228,114 @@ app.get("/search", async (req, res) => {
     console.error("SEARCH ERROR:", err);
     res.status(500).json(null);
   }
+}
+
+// Old + API paths both supported
+app.get("/search", crewSearchHandler);
+app.get("/api/search", crewSearchHandler);
+
+// =======================
+// DYNAMIC LOBBIES
+// =======================
+app.get("/lobbies", async (req, res) => {
+  try {
+    const division = req.query.division || "";
+
+    let sql = `
+      SELECT DISTINCT
+        SUBSTRING(crew_id FROM '^[A-Z]+') AS lobby
+      FROM crew_master
+      WHERE crew_id IS NOT NULL
+    `;
+
+    const values = [];
+
+    if (division) {
+      sql += ` AND cli_id ILIKE $1`;
+      values.push(`%${division}%`);
+    }
+
+    sql += ` ORDER BY lobby`;
+
+    const result = await pool.query(sql, values);
+
+    res.json(
+      result.rows
+        .map(r => r.lobby)
+        .filter(l => l && l.length >= 2)
+    );
+  } catch (err) {
+    console.error("LOBBY API ERROR:", err);
+    res.status(500).json([]);
+  }
 });
 
 // =======================
-// STATION SUGGEST (WEATHER)
+// DESIGNATIONS
+// =======================
+app.get("/designations", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT DISTINCT designation
+      FROM crew_master
+      WHERE designation IS NOT NULL
+        AND designation <> ''
+      ORDER BY designation
+    `);
+
+    res.json(result.rows.map(r => r.designation));
+  } catch (err) {
+    console.error("DESIGNATION API ERROR:", err);
+    res.status(500).json([]);
+  }
+});
+
+// =======================
+// STATION SUGGEST (WEATHER SEARCH)
 // =======================
 app.get("/api/stations", (req, res) => {
   const q = (req.query.q || "").toLowerCase();
 
   const list = Object.entries(stations)
-    .filter(([code, s]) =>
-      code.toLowerCase().includes(q) ||
-      s.name.toLowerCase().includes(q)
-    )
+    .filter(([code, s]) => {
+      return (
+        code.toLowerCase().includes(q) ||
+        s.name.toLowerCase().includes(q)
+      );
+    })
     .map(([code, s]) => ({
       code,
-      name: s.name
+      name: s.name,
+      location: s.location,
+      division: s.division || "ER",
+      category: s.category || ""
     }))
-    .slice(0, 15);
+    .slice(0, 20);
 
   res.json(list);
 });
 
 // =======================
-// SINGLE STATION WEATHER
+// WEATHER API
 // =======================
 app.get("/api/weather", async (req, res) => {
-  const code = req.query.station;
-  const s = stations[code];
-
-  if (!s) return res.status(404).json({ error: "Station not found" });
-
   try {
-    const url = `https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_KEY}&q=${encodeURIComponent(
+    const code = req.query.station;
+    const s = stations[code];
+
+    if (!s) return res.status(404).json({ error: "Station not found" });
+
+    const url = `https://api.weatherapi.com/v1/current.json?key=${WEATHER_KEY}&q=${encodeURIComponent(
       s.location
-    )}&days=1&aqi=no&alerts=no`;
+    )}`;
 
     const r = await fetch(url);
     const data = await r.json();
 
-    res.json({ station: s, weather: data });
+    res.json({
+      station: s,
+      weather: data
+    });
   } catch (e) {
     console.error("WEATHER ERROR:", e);
     res.status(500).json({ error: "Weather fetch failed" });
@@ -384,7 +343,7 @@ app.get("/api/weather", async (req, res) => {
 });
 
 // =======================
-// Start Server
+// START SERVER
 // =======================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
