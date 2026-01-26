@@ -331,6 +331,43 @@ body {
   align-items: center;
 }
 
+/* ================= WEATHER HEIGHT LOCK FIX ================= */
+
+/* Lock header height no matter what */
+.header {
+  height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+  overflow: hidden;
+}
+
+/* Keep right-side container aligned */
+.header > .d-flex {
+  height: 100%;
+  align-items: center;
+}
+
+/* Weather box stays inside header */
+#weatherBox {
+  min-width: 260px;
+  max-width: 260px;
+  max-height: 52px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;   /* max 3 lines */
+  -webkit-box-orient: vertical;
+}
+
+/* Prevent cards inside weatherBox from breaking layout */
+#weatherBox * {
+  max-height: 52px;
+  overflow: hidden;
+}
+
+
 </style>
 </head>
 <body>
