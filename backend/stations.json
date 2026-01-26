@@ -1,0 +1,352 @@
+{
+  "RPH": {
+    "name": "Rampurhat",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Rampurhat, Birbhum, West Bengal, India"
+  },
+  "TPF": {
+    "name": "Tarapith Road",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Tarapith Road, Birbhum, West Bengal, India"
+  },
+  "MLV": {
+    "name": "Mallarpur",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Mallarpur, Birbhum, West Bengal, India"
+  },
+  "GHLE": {
+    "name": "Gadadharpur",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Gadadharpur, Birbhum, West Bengal, India"
+  },
+  "SNT": {
+    "name": "Sainthia Junction",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Sainthia, Birbhum, West Bengal, India"
+  },
+  "BSLE": {
+    "name": "Batspur",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Batspur, Birbhum, West Bengal, India"
+  },
+  "AMP": {
+    "name": "Ahmadpur Junction",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Ahmadpur, Birbhum, West Bengal, India"
+  },
+  "KPLE": {
+    "name": "Kopai",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Kopai, Birbhum, West Bengal, India"
+  },
+  "PNE": {
+    "name": "Prantik",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Prantik, Birbhum, West Bengal, India"
+  },
+  "BHP": {
+    "name": "Bolpur Shantiniketan",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Bolpur, Birbhum, West Bengal, India"
+  },
+  "BDH": {
+    "name": "Bhedia",
+    "district": "Purba Bardhaman",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Bhedia, Purba Bardhaman, West Bengal, India"
+  },
+  "PCQ": {
+    "name": "Pichkurirdhal",
+    "district": "Purba Bardhaman",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Pichkurirdhal, Purba Bardhaman, West Bengal, India"
+  },
+  "GKH": {
+    "name": "Guskara",
+    "district": "Purba Bardhaman",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Guskara, Purba Bardhaman, West Bengal, India"
+  },
+  "NRX": {
+    "name": "Noadar Dhal",
+    "district": "Purba Bardhaman",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Noadar Dhal, Purba Bardhaman, West Bengal, India"
+  },
+  "BPS": {
+    "name": "Banpas",
+    "district": "Purba Bardhaman",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Banpas, Purba Bardhaman, West Bengal, India"
+  },
+  "JTL": {
+    "name": "Jhapater Dhal",
+    "district": "Purba Bardhaman",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Jhapater Dhal, Purba Bardhaman, West Bengal, India"
+  },
+  "KAN": {
+    "name": "Khana Junction",
+    "district": "Purba Bardhaman",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Khana, Purba Bardhaman, West Bengal, India"
+  },
+  "TIT": {
+    "name": "Talit",
+    "district": "Purba Bardhaman",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Talit, Purba Bardhaman, West Bengal, India"
+  },
+  "BWN": {
+    "name": "Barddhaman Junction",
+    "district": "Purba Bardhaman",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Bardhaman, Purba Bardhaman, West Bengal, India"
+  },
+  "PKR": {
+    "name": "Pakur",
+    "district": "Pakur",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Pakur, Jharkhand, India"
+  },
+  "NHT": {
+    "name": "Nalhati Junction",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Nalhati, Birbhum, West Bengal, India"
+  },
+  "SDLE": {
+    "name": "Swadinpur",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Swadinpur, Birbhum, West Bengal, India"
+  },
+  "ALPD": {
+    "name": "Adalpahari",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Adalpahari, Birbhum, West Bengal, India"
+  },
+  "HRNS": {
+    "name": "Pakadaha Harinsing",
+    "district": "Pakur",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Pakadaha, Pakur, Jharkhand, India"
+  },
+  "TKP": {
+    "name": "Takipur",
+    "district": "Pakur",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Takipur, Pakur, Jharkhand, India"
+  },
+  "MRR": {
+    "name": "Murarai",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Murarai, Birbhum, West Bengal, India"
+  },
+  "SKIP": {
+    "name": "Ambajora Shikaripara",
+    "district": "Dumka",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Shikaripara, Dumka, Jharkhand, India"
+  },
+  "LAP": {
+    "name": "Lohapur Halt",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Lohapur, Birbhum, West Bengal, India"
+  },
+  "MGAE": {
+    "name": "Morgram",
+    "district": "Murshidabad",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Morgram, Murshidabad, West Bengal, India"
+  },
+  "RJG": {
+    "name": "Rajgram",
+    "district": "Pakur",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Rajgram, Pakur, Jharkhand, India"
+  },
+  "SDI": {
+    "name": "Sagar Dighi",
+    "district": "Murshidabad",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Sagardighi, Murshidabad, West Bengal, India"
+  },
+  "NGF": {
+    "name": "Nagarnabi",
+    "district": "Pakur",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Nagarnabi, Pakur, Jharkhand, India"
+  },
+  "DUMK": {
+    "name": "Dumka",
+    "district": "Dumka",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Dumka, Jharkhand, India"
+  },
+  "BAA": {
+    "name": "Barala Halt",
+    "district": "Murshidabad",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Barala, Murshidabad, West Bengal, India"
+  },
+  "KOX": {
+    "name": "Kachujor",
+    "district": "Birbhum",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Kachujor, Birbhum, West Bengal, India"
+  },
+  "MPUR": {
+    "name": "New Madanpur",
+    "district": "Murshidabad",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Madanpur, Murshidabad, West Bengal, India"
+  },
+  "GSGB": {
+    "name": "Gosain Gram",
+    "district": "Murshidabad",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Gosain Gram, Murshidabad, West Bengal, India"
+  },
+  "KLP": {
+    "name": "Kotalpukur",
+    "district": "Pakur",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Kotalpukur, Pakur, Jharkhand, India"
+  },
+  "NNHT": {
+    "name": "Nonihat",
+    "district": "Dumka",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Nonihat, Dumka, Jharkhand, India"
+  },
+  "AZ": {
+    "name": "Azimganj Junction",
+    "district": "Murshidabad",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Azimganj, Murshidabad, West Bengal, India"
+  },
+  "GMAN": {
+    "name": "Gumani",
+    "district": "Pakur",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Gumani, Pakur, Jharkhand, India"
+  },
+  "HSDA": {
+    "name": "Hansdiha",
+    "district": "Dumka",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Hansdiha, Dumka, Jharkhand, India"
+  },
+  "BDAG": {
+    "name": "Bonidanga",
+    "district": "Sahibganj",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Bonidanga, Sahibganj, Jharkhand, India"
+  },
+  "BHW": {
+    "name": "Barharwa Junction",
+    "district": "Sahibganj",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Barharwa, Sahibganj, Jharkhand, India"
+  },
+  "TDLE": {
+    "name": "Tildanga",
+    "district": "Sahibganj",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Tildanga, Sahibganj, Jharkhand, India"
+  },
+  "NFK": {
+    "name": "New Farakka Junction",
+    "district": "Murshidabad",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Farakka, Murshidabad, West Bengal, India"
+  },
+  "SBG": {
+    "name": "Sahibganj",
+    "district": "Sahibganj",
+    "state": "Jharkhand",
+    "routes": [],
+    "location": "Sahibganj, Jharkhand, India"
+  },
+  "CLG": {
+    "name": "Kahalgaon",
+    "district": "Bhagalpur",
+    "state": "Bihar",
+    "routes": [],
+    "location": "Kahalgaon, Bhagalpur, Bihar, India"
+  },
+  "BGP": {
+    "name": "Bhagalpur Junction",
+    "district": "Bhagalpur",
+    "state": "Bihar",
+    "routes": [],
+    "location": "Bhagalpur, Bihar, India"
+  },
+  "MLDT": {
+    "name": "Malda Town",
+    "district": "Malda",
+    "state": "West Bengal",
+    "routes": [],
+    "location": "Malda, West Bengal, India"
+  }
+}

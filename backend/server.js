@@ -1,3 +1,10 @@
+const fs = require("fs");
+const WEATHER_KEY = process.env.WEATHER_KEY || "23e40c2ae17c42e5805121929262401";
+
+const stations = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "stations.json"), "utf-8")
+);
+
 require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
@@ -328,6 +335,50 @@ app.get("/search", async (req, res) => {
   } catch (err) {
     console.error("SEARCH ERROR:", err);
     res.status(500).json(null);
+  }
+});
+
+// =======================
+// STATION SUGGEST (WEATHER)
+// =======================
+app.get("/api/stations", (req, res) => {
+  const q = (req.query.q || "").toLowerCase();
+
+  const list = Object.entries(stations)
+    .filter(([code, s]) =>
+      code.toLowerCase().includes(q) ||
+      s.name.toLowerCase().includes(q)
+    )
+    .map(([code, s]) => ({
+      code,
+      name: s.name
+    }))
+    .slice(0, 15);
+
+  res.json(list);
+});
+
+// =======================
+// SINGLE STATION WEATHER
+// =======================
+app.get("/api/weather", async (req, res) => {
+  const code = req.query.station;
+  const s = stations[code];
+
+  if (!s) return res.status(404).json({ error: "Station not found" });
+
+  try {
+    const url = `https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_KEY}&q=${encodeURIComponent(
+      s.location
+    )}&days=1&aqi=no&alerts=no`;
+
+    const r = await fetch(url);
+    const data = await r.json();
+
+    res.json({ station: s, weather: data });
+  } catch (e) {
+    console.error("WEATHER ERROR:", e);
+    res.status(500).json({ error: "Weather fetch failed" });
   }
 });
 
