@@ -331,6 +331,47 @@ body {
   align-items: center;
 }
 
+/* ========== LOCK HEADER HEIGHT ========== */
+.header {
+  height: 64px;                 /* fixed navbar height */
+  min-height: 64px;
+  max-height: 64px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;           /* prevent children from expanding it */
+}
+
+/* Right side container (search + weather + clock) */
+.header .d-flex.align-items-center.gap-2.position-relative {
+  height: 100%;
+  align-items: center;
+}
+
+/* Search box positioning */
+#stationSearch {
+  margin-right: 12px;
+  height: 34px;
+}
+
+/* Weather box — stays inside header */
+#weatherBox {
+  min-width: 260px;
+  max-width: 260px;
+  max-height: 52px;           /* prevents vertical growth */
+  overflow: hidden;          /* hides extra lines */
+  line-height: 1.2;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  white-space: normal;
+}
+
+/* Make text shrink instead of pushing layout */
+#weatherBox br {
+  display: none;
+}
+
 </style>
 </head>
 <body>
