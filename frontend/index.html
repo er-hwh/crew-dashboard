@@ -510,6 +510,14 @@ body {
 <script src="/weather.js"></script>
 <script>
 
+let STATION_MAP = {};
+
+async function loadStations() {
+  const res = await fetch("/stations.json");
+  const data = await res.json();
+  STATION_MAP = data;
+}
+
 const API_BASE = "http://localhost:3000";
 // later change to Render URL
 
@@ -849,14 +857,23 @@ function showSuggestions(list, q) {
   box.style.display = "block";
 }
 
-function selectStation(code, name) {
+function selectStation(code) {
+  console.log("Station selected:", code);
+
   const input = document.getElementById("stationSearch");
-  const box = document.getElementById("suggestions");
+  const box = document.getElementById("stationSuggest");
 
   input.value = code;
   box.style.display = "none";
 
-  loadWeather(code);
+  const station = STATION_MAP[code];
+
+  if (!station) {
+    document.getElementById("weatherBox").innerHTML = "⚠️ Station not found";
+    return;
+  }
+
+  loadWeather(station); // ✅ now full object goes
 }
 
 async function selectCrew(id) {
@@ -1021,10 +1038,16 @@ async function loadWeather(station) {
 }
 
 /* ================= LOAD DEFAULT ================= */
-document.addEventListener("DOMContentLoaded", () => {
+/*document.addEventListener("DOMContentLoaded", () => {
+  const firstBtn = document.querySelector(".menu button");
+  loadCrewModule(firstBtn);
+});*/
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadStations();
   const firstBtn = document.querySelector(".menu button");
   loadCrewModule(firstBtn);
 });
+
 
 </script>
 
