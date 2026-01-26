@@ -331,6 +331,42 @@ body {
   align-items: center;
 }
 
+/* ================= RAILWAY WEATHER BADGE ================= */
+
+.weather-badge {
+  background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 6px 12px;
+  min-width: 260px;
+  max-width: 260px;
+  max-height: 42px;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Text inside badge */
+.weather-badge span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Status dot */
+.weather-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34,197,94,0.8);
+}
+
 </style>
 </head>
 <body>
@@ -394,11 +430,11 @@ body {
 
       <div
         id="weatherBox"
-        class="text-white"
-        style="background:rgba(255,255,255,0.15); padding:6px 10px; border-radius:10px; font-size:0.8rem; min-width:180px;"
+        class="weather-badge text-white"
       >
         🌤️ Select Station
       </div>
+
     </div>
 
     <div id="clock"></div>
@@ -421,6 +457,40 @@ body {
 
 const API_BASE = "http://localhost:3000";
 // later change to Render URL
+
+async function loadWeather(code) {
+  try {
+    const box = document.getElementById("weatherBox");
+    if (!box) return;
+
+    // Loading state
+    box.innerHTML = `🌤️ Loading...`;
+
+    const res = await fetch(`/api/weather?station=${encodeURIComponent(code)}`);
+    if (!res.ok) throw new Error("Weather API failed");
+
+    const data = await res.json();
+
+    const stationName = data.station?.name || code;
+    const temp = data.weather?.current?.temp_c ?? "--";
+    const humidity = data.weather?.current?.humidity ?? "--";
+    const condition = data.weather?.current?.condition?.text || "N/A";
+
+    box.innerHTML = `
+      <span>📍 ${stationName}</span>
+      <span>🌡 ${temp}°C</span>
+      <span>💧 ${humidity}%</span>
+      <span>${condition}</span>
+      <span class="weather-dot"></span>
+    `;
+  } catch (err) {
+    console.error("WEATHER ERROR:", err);
+    const box = document.getElementById("weatherBox");
+    if (box) {
+      box.innerHTML = `⚠️ Weather unavailable`;
+    }
+  }
+}
 
 /* ================= CLOCK ================= */
 function updateClock() {
