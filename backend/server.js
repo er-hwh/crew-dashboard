@@ -56,7 +56,9 @@ app.get("/admin-upload", (req, res) => {
 app.get("/speed", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "speed.html"));
 });
-
+app.get("/long_hrs", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend", "long_hours.html"));
+});
 // =======================
 // Progress API
 // =======================

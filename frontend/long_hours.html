@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Long Hours Converter CMS → Sheet Format</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+
+<!-- DataTables -->
+<link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
+
+<!-- XLSX -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+body {
+  padding: 14px;
+  background: linear-gradient(135deg, #eef3f9, #f8fbff);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Header */
+.header-box {
+  background: linear-gradient(135deg, #1e3a5f, #274b7a);
+  color: white;
+  padding: 14px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Card */
+.card {
+  border-radius: 14px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Table */
+.table-responsive {
+  border-radius: 12px;
+  overflow: auto;
+  max-height: 70vh;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  background: white;
+}
+
+table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+thead th {
+  background: #1e3a5f !important;
+  color: white !important;
+  text-align: center;
+  font-size: 12px;
+  white-space: pre-line;
+  padding: 8px;
+  border: 1px solid #0d2440 !important;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+td {
+  text-align: center;
+  vertical-align: middle;
+  font-size: 12px;
+  padding: 6px 8px;
+  border: 1px solid #d0d8e4 !important;
+  white-space: normal;
+}
+
+/* Zebra */
+tbody tr:nth-child(even) {
+  background-color: #f4f7fb;
+}
+
+/* Hover */
+tbody tr:hover {
+  background-color: #e8f1ff;
+}
+
+/* Editable */
+.editable {
+  background-color: #fff8dc;
+}
+.editable:focus {
+  outline: 2px solid #4a90e2;
+  background: white;
+}
+
+/* Freeze first column */
+thead th:first-child,
+tbody td:first-child {
+  position: sticky;
+  left: 0;
+  background: #f1f5fb;
+  z-index: 4;
+  font-weight: bold;
+  border-right: 2px solid #1e3a5f !important;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 20px;
+  padding: 6px 16px;
+}
+
+/* DataTable search */
+.dataTables_filter input {
+  border-radius: 20px;
+  padding: 4px 10px;
+  margin-left: 6px;
+}
+
+/* Print */
+@media print {
+  body { background: white; }
+  .header-box, .card, .btn, .dataTables_filter, .dataTables_paginate {
+    display: none !important;
+  }
+  .table-responsive {
+    box-shadow: none;
+    max-height: none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header-box text-center">
+  <h4 class="mb-1">
+    <i class="fa-solid fa-train"></i> Long Hours Converter — CMS to Sheet Format
+  </h4>
+  <small>
+    <i class="fa-solid fa-upload"></i> Upload XLSX →
+    <i class="fa-solid fa-gear"></i> Generate →
+    <i class="fa-solid fa-magnifying-glass"></i> Search →
+    <i class="fa-solid fa-file-excel"></i> Download
+  </small>
+</div>
+
+<div class="card mb-2">
+  <div class="card-body py-2 d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div class="w-50">
+      <label class="form-label fw-bold mb-1">
+        <i class="fa-solid fa-file-excel text-success"></i> Upload Source XLSX
+      </label>
+      <input type="file" id="sourceFile" class="form-control form-control-sm" accept=".xlsx">
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-primary" onclick="submitSource()">
+        <i class="fa-solid fa-play"></i> Generate Table
+      </button>
+      <button class="btn btn-sm btn-success" onclick="downloadResult()">
+        <i class="fa-solid fa-download"></i> Download Excel
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="table-responsive">
+<table class="table table-bordered table-sm" id="resultTable">
+  <thead>
+    <tr id="headerRow"></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+const TEMPLATE_HEADERS = [
+  "Sl","Crew ID","Crew Name","Train No","Loco",
+  "Date","ON Time","ON Stn",
+  "AS Pass\nDep Time(Before working)",
+  "As Pass\nDep Stn\n(Before working)",
+  "As Pass\nArr Time(Before working)",
+  "As Pass\nArr Stn(Before working)",
+  "CTO","Dep","CTO/DEP Stn",
+  "INT STN ARR","INT STN DEP","INT Stn",
+  "Arr","CMO","MOC Stn",
+  "AS Pass\nDep Time(After working)",
+  "As Pass\nDep Stn\n(After working)",
+  "As Pass\nArr Time(After working)",
+  "As Pass\nArr Stn(After working)",
+  "OFF Time","Off Stn"
+];
+
+let resultData = [];
+let dataTableInstance = null;
+
+// Render headers
+const headerRow = document.getElementById("headerRow");
+TEMPLATE_HEADERS.forEach(h => {
+  const th = document.createElement("th");
+  th.innerText = h;
+  headerRow.appendChild(th);
+});
+
+// Helpers
+function clean(k){ return k.toLowerCase().replace(/[^a-z0-9]/g,""); }
+
+function findValue(row, aliases){
+  const keys = Object.keys(row||{});
+  for (let a of aliases){
+    const f = keys.find(k => clean(k) === clean(a));
+    if (f && row[f] !== "") return row[f];
+  }
+  return "";
+}
+
+function extractTime(v){
+  if(!v) return "";
+  const m = v.toString().match(/(\d{1,2}):(\d{1,2})/);
+  return m ? m[1].padStart(2,"0")+":"+m[2].padStart(2,"0") : "";
+}
+
+function parseSignOnDate(v){
+  if(!v) return {date:"",time:""};
+  const s=v.toString().trim().replace(/\//g,"-").replace(/\./g,"-");
+  const p=s.split(" ");
+  const d=p[0].split("-");
+  const t=p[1]||"";
+  let date="";
+  if(d.length===3){
+    const yy=d[2].length===4?d[2].slice(-2):d[2];
+    date=`${d[0].padStart(2,"0")}-${d[1].padStart(2,"0")}-${yy}`;
+  }
+  return {date,time:extractTime(t)};
+}
+
+// Submit
+function submitSource(){
+  resultData=[];
+  document.querySelector("#resultTable tbody").innerHTML="";
+
+  if(dataTableInstance){
+    dataTableInstance.destroy();
+    dataTableInstance = null;
+  }
+
+  const f=document.getElementById("sourceFile").files[0];
+  if(!f){ alert("Upload file"); return; }
+
+  const r=new FileReader();
+  r.onload=e=>{
+    const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array"});
+    const sh=wb.Sheets[wb.SheetNames[0]];
+    const aoa=XLSX.utils.sheet_to_json(sh,{header:1,defval:""});
+    let hi=-1;
+    for(let i=0;i<aoa.length;i++){
+      if(clean(aoa[i][0]||"")==="sno"){ hi=i; break; }
+    }
+    if(hi===-1){ alert("S.No header not found"); return; }
+
+    const headers=aoa[hi];
+    const rows=aoa.slice(hi+1).map(r=>{
+      const o={}; headers.forEach((h,i)=>{ if(h) o[h]=r[i]; }); return o;
+    });
+
+    generateResult(rows);
+    renderTable();
+    initDataTable();
+  };
+  r.readAsArrayBuffer(f);
+}
+
+// Core logic (UNCHANGED)
+function generateResult(sourceRows){
+  const groups={};
+  sourceRows.forEach(r=>{
+    const sn=r[Object.keys(r)[0]];
+    if(!sn) return;
+    if(!groups[sn]) groups[sn]=[];
+    groups[sn].push(r);
+  });
+
+  Object.keys(groups).forEach(sn=>{
+    const rows=groups[sn];
+    const first=rows[0];
+    const out={}; TEMPLATE_HEADERS.forEach(h=>out[h]="");
+
+    // PART 1
+    out["Sl"]=sn;
+    out["Crew ID"]=findValue(first,["CREW ID"]);
+    out["Crew Name"]=findValue(first,["NAME"]);
+    out["Train No"]=findValue(rows.find(r=>findValue(r,["DUTY TYPE"])==="WR")||{},["TRAIN NO"]);
+    out["Loco"]=findValue(rows.find(r=>findValue(r,["LOCO NO"]))||{},["LOCO NO"]);
+
+    // PART 2
+    const p=parseSignOnDate(findValue(first,["SIGNON DATE"]));
+    out["Date"]=p.date;
+    out["ON Time"]=p.time;
+    out["ON Stn"]=findValue(first,["SIGNON STTN"]);
+
+    // PART 3
+    const wrIdx=rows.findIndex(r=>findValue(r,["DUTY TYPE"])==="WR");
+    const spB=rows.slice(0,wrIdx===-1?rows.length:wrIdx).filter(r=>findValue(r,["DUTY TYPE"])==="SP");
+    if(findValue(first,["DUTY TYPE"])!=="WR" && spB.length){
+      out["AS Pass\nDep Time(Before working)"]=extractTime(findValue(spB[0],["DEPARTURE"]));
+      out["As Pass\nDep Stn\n(Before working)"]=findValue(spB[0],["SIGNON STTN"]);
+      out["As Pass\nArr Time(Before working)"]=extractTime(findValue(spB.at(-1),["ARRIVAL"]));
+      out["As Pass\nArr Stn(Before working)"]=findValue(spB.at(-1),["SIGNOFF STTN"]);
+    }
+
+    // PART 4
+    const wr=rows.filter(r=>findValue(r,["DUTY TYPE"])==="WR");
+    if(wr.length){
+      out["CTO"]=extractTime(findValue(wr[0],["CTO"]));
+      out["Dep"]=extractTime(findValue(wr[0],["DEPARTURE"]));
+      out["CTO/DEP Stn"]=findValue(wr[0],["SIGNON STTN"]);
+      out["Arr"]=extractTime(findValue(wr.at(-1),["ARRIVAL"]));
+      out["CMO"]=extractTime(findValue(wr.at(-1),["CMO"]));
+      out["MOC Stn"]=findValue(wr.at(-1),["SIGNOFF STTN"]);
+    }
+
+    // PART 5
+    const spA=wrIdx!==-1?rows.slice(wrIdx+1).filter(r=>findValue(r,["DUTY TYPE"])==="SP"):[];
+    if(spA.length){
+      out["AS Pass\nDep Time(After working)"]=extractTime(findValue(spA[0],["DEPARTURE"]));
+      out["As Pass\nDep Stn\n(After working)"]=findValue(spA[0],["SIGNON STTN"]);
+      out["As Pass\nArr Time(After working)"]=extractTime(findValue(spA.at(-1),["ARRIVAL"]));
+      out["As Pass\nArr Stn(After working)"]=findValue(spA.at(-1),["SIGNOFF STTN"]);
+    }
+
+    // PART 6
+    const last=rows.at(-1);
+    out["OFF Time"]=extractTime(findValue(last,["SIGNOFF DATE"]));
+    out["Off Stn"]=findValue(last,["SIGNOFF STTN"]);
+
+    resultData.push(out);
+  });
+}
+
+// Render
+function renderTable(){
+  const tb=document.querySelector("#resultTable tbody");
+  tb.innerHTML="";
+  resultData.forEach((r)=>{
+    const tr=document.createElement("tr");
+    TEMPLATE_HEADERS.forEach(h=>{
+      const td=document.createElement("td");
+      td.contentEditable=true;
+      td.className="editable";
+      td.innerText=r[h]||"";
+      td.oninput=()=>r[h]=td.innerText.trim();
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+}
+
+// Init DataTable
+function initDataTable(){
+  dataTableInstance = $('#resultTable').DataTable({
+    pageLength: 10,
+    lengthMenu: [10, 25, 50, 100, 500],
+    scrollX: true,
+    order: [],
+    language: {
+      search: "🔍 Search:",
+      lengthMenu: "Show _MENU_ rows",
+      info: "Showing _START_ to _END_ of _TOTAL_ rows"
+    }
+  });
+}
+
+// Download
+function downloadResult(){
+  if(!resultData.length){ alert("No data"); return; }
+  const ws=XLSX.utils.aoa_to_sheet([
+    TEMPLATE_HEADERS,
+    ...resultData.map(r=>TEMPLATE_HEADERS.map(h=>r[h]||""))
+  ]);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"RESULT");
+  XLSX.writeFile(wb,"RESULT.xlsx");
+}
+</script>
+
+</body>
+</html>
