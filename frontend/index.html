@@ -340,7 +340,7 @@ body {
   padding: 6px 12px;
   min-width: 260px;
   max-width: 260px;
-  max-height: 42px;
+  /*max-height: 42px;*/
   font-size: 0.78rem;
   display: flex;
   align-items: center;
@@ -477,10 +477,8 @@ async function loadWeather(code) {
     const condition = data.weather?.current?.condition?.text || "N/A";
 
     box.innerHTML = `
-      <span>📍 ${stationName}</span>
-      <span>🌡 ${temp}°C</span>
-      <span>💧 ${humidity}%</span>
-      <span>${condition}</span>
+      <span>📍 ${stationName} | 🌡 ${temp}°C</span><br>
+      <span>💧 ${humidity}% | ${condition}</span>
       <span class="weather-dot"></span>
     `;
   } catch (err) {
