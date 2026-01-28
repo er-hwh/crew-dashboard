@@ -279,68 +279,138 @@ function submitSource(){
   r.readAsArrayBuffer(f);
 }
 
-// Core logic (UNCHANGED)
+// ---------- CORE LOGIC (UPDATED PART 3 + WORKING + NO-WR CASE) ----------
 function generateResult(sourceRows){
-  const groups={};
-  sourceRows.forEach(r=>{
-    const sn=r[Object.keys(r)[0]];
-    if(!sn) return;
-    if(!groups[sn]) groups[sn]=[];
+  resultData = [];
+
+  // Group by S.No
+  const groups = {};
+  sourceRows.forEach(r => {
+    const keys = Object.keys(r || {});
+    if (!keys.length) return;
+    const sn = r[keys[0]];
+    if (!sn) return;
+    if (!groups[sn]) groups[sn] = [];
     groups[sn].push(r);
   });
 
-  Object.keys(groups).forEach(sn=>{
-    const rows=groups[sn];
-    const first=rows[0];
-    const out={}; TEMPLATE_HEADERS.forEach(h=>out[h]="");
+  Object.keys(groups).forEach(sn => {
+    const rows = groups[sn];
+    const first = rows[0];
 
-    // PART 1
-    out["Sl"]=sn;
-    out["Crew ID"]=findValue(first,["CREW ID"]);
-    out["Crew Name"]=findValue(first,["NAME"]);
-    out["Train No"]=findValue(rows.find(r=>findValue(r,["DUTY TYPE"])==="WR")||{},["TRAIN NO"]);
-    out["Loco"]=findValue(rows.find(r=>findValue(r,["LOCO NO"]))||{},["LOCO NO"]);
+    const out = {};
+    TEMPLATE_HEADERS.forEach(h => out[h] = "");
 
-    // PART 2
-    const p=parseSignOnDate(findValue(first,["SIGNON DATE"]));
-    out["Date"]=p.date;
-    out["ON Time"]=p.time;
-    out["ON Stn"]=findValue(first,["SIGNON STTN"]);
+    // ---------------- PART 1 ----------------
+    out["Sl"] = sn;
+    out["Crew ID"] = findValue(first, ["CREW ID"]);
+    out["Crew Name"] = findValue(first, ["NAME"]);
 
-    // PART 3
-    const wrIdx=rows.findIndex(r=>findValue(r,["DUTY TYPE"])==="WR");
-    const spB=rows.slice(0,wrIdx===-1?rows.length:wrIdx).filter(r=>findValue(r,["DUTY TYPE"])==="SP");
-    if(findValue(first,["DUTY TYPE"])!=="WR" && spB.length){
-      out["AS Pass\nDep Time(Before working)"]=extractTime(findValue(spB[0],["DEPARTURE"]));
-      out["As Pass\nDep Stn\n(Before working)"]=findValue(spB[0],["SIGNON STTN"]);
-      out["As Pass\nArr Time(Before working)"]=extractTime(findValue(spB.at(-1),["ARRIVAL"]));
-      out["As Pass\nArr Stn(Before working)"]=findValue(spB.at(-1),["SIGNOFF STTN"]);
+    // Prefer WR train no, fallback any
+    let trainRow = rows.find(r => findValue(r, ["DUTY TYPE"]) === "WR");
+    if (!trainRow) trainRow = rows.find(r => findValue(r, ["TRAIN NO"]));
+    out["Train No"] = trainRow ? findValue(trainRow, ["TRAIN NO"]) : "";
+
+    // First available loco
+    const locoRow = rows.find(r => findValue(r, ["LOCO NO"]));
+    out["Loco"] = locoRow ? findValue(locoRow, ["LOCO NO"]) : "";
+
+    // ---------------- PART 2 ----------------
+    const p = parseSignOnDate(findValue(first, ["SIGNON DATE"]));
+    out["Date"] = p.date;
+    out["ON Time"] = p.time;
+    out["ON Stn"] = findValue(first, ["SIGNON STTN"]);
+
+    // ---------------- DUTY TYPE HELPERS ----------------
+    const isWR = r => findValue(r, ["DUTY TYPE"]) === "WR";
+    const isSP = r => findValue(r, ["DUTY TYPE"]) === "SP";
+
+    // WR Equivalents
+    const isEquivalentWR = r => {
+      const d = findValue(r, ["DUTY TYPE"]);
+      return ["WR", "LR", "KH", "YR", "WT"].includes(d);
+    };
+
+    // For YR/WT → CTO & CMO NOT allowed
+    const noCTO_CMO = r => {
+      const d = findValue(r, ["DUTY TYPE"]);
+      return ["YR", "WT"].includes(d);
+    };
+
+    // ---------------- PART 3 (AS PASS BEFORE WORKING) ----------------
+    const firstDuty = findValue(first, ["DUTY TYPE"]);
+    const firstWRIndex = rows.findIndex(r => isEquivalentWR(r));
+
+    const spBefore = rows
+      .slice(0, firstWRIndex === -1 ? rows.length : firstWRIndex)
+      .filter(r => isSP(r));
+
+    if (firstDuty !== "WR" && spBefore.length) {
+      const firstSP = spBefore[0];
+      const lastSP = spBefore[spBefore.length - 1];
+
+      out["AS Pass\nDep Time(Before working)"] =
+        extractTime(findValue(firstSP, ["DEPARTURE"]));
+      out["As Pass\nDep Stn\n(Before working)"] =
+        findValue(firstSP, ["SIGNON STTN"]);
+      out["As Pass\nArr Time(Before working)"] =
+        extractTime(findValue(lastSP, ["ARRIVAL"]));
+      out["As Pass\nArr Stn(Before working)"] =
+        findValue(lastSP, ["SIGNOFF STTN"]);
     }
 
-    // PART 4
-    const wr=rows.filter(r=>findValue(r,["DUTY TYPE"])==="WR");
-    if(wr.length){
-      out["CTO"]=extractTime(findValue(wr[0],["CTO"]));
-      out["Dep"]=extractTime(findValue(wr[0],["DEPARTURE"]));
-      out["CTO/DEP Stn"]=findValue(wr[0],["SIGNON STTN"]);
-      out["Arr"]=extractTime(findValue(wr.at(-1),["ARRIVAL"]));
-      out["CMO"]=extractTime(findValue(wr.at(-1),["CMO"]));
-      out["MOC Stn"]=findValue(wr.at(-1),["SIGNOFF STTN"]);
+    // ---------------- WORKING PART (PART 4) ----------------
+    const wrRows = rows.filter(r => isEquivalentWR(r));
+
+    // Single-row duty → everything stays blank
+    if (rows.length > 1 && wrRows.length) {
+      const firstWR = wrRows[0];
+      const lastWR = wrRows[wrRows.length - 1];
+
+      // SUBPART 1 — Start Working
+      if (!noCTO_CMO(firstWR)) {
+        out["CTO"] = extractTime(findValue(firstWR, ["CTO"]));
+      }
+      out["Dep"] = extractTime(findValue(firstWR, ["DEPARTURE"]));
+      out["CTO/DEP Stn"] = findValue(firstWR, ["SIGNON STTN"]);
+
+      // SUBPART 2 — INT STN → always blank (do nothing)
+
+      // SUBPART 3 — End Working
+      out["Arr"] = extractTime(findValue(lastWR, ["ARRIVAL"]));
+      if (!noCTO_CMO(lastWR)) {
+        out["CMO"] = extractTime(findValue(lastWR, ["CMO"]));
+      }
+      out["MOC Stn"] = findValue(lastWR, ["SIGNOFF STTN"]);
     }
 
-    // PART 5
-    const spA=wrIdx!==-1?rows.slice(wrIdx+1).filter(r=>findValue(r,["DUTY TYPE"])==="SP"):[];
-    if(spA.length){
-      out["AS Pass\nDep Time(After working)"]=extractTime(findValue(spA[0],["DEPARTURE"]));
-      out["As Pass\nDep Stn\n(After working)"]=findValue(spA[0],["SIGNON STTN"]);
-      out["As Pass\nArr Time(After working)"]=extractTime(findValue(spA.at(-1),["ARRIVAL"]));
-      out["As Pass\nArr Stn(After working)"]=findValue(spA.at(-1),["SIGNOFF STTN"]);
+    // ---------------- PART 5 (AS PASS AFTER WORKING) ----------------
+    const lastWRIndex = rows.map(r => isEquivalentWR(r)).lastIndexOf(true);
+    const spAfter =
+      lastWRIndex !== -1
+        ? rows.slice(lastWRIndex + 1).filter(r => isSP(r))
+        : [];
+
+    if (spAfter.length && rows.length > 1) {
+      const firstSP = spAfter[0];
+      const lastSP = spAfter[spAfter.length - 1];
+
+      out["AS Pass\nDep Time(After working)"] =
+        extractTime(findValue(firstSP, ["DEPARTURE"]));
+      out["As Pass\nDep Stn\n(After working)"] =
+        findValue(firstSP, ["SIGNON STTN"]);
+      out["As Pass\nArr Time(After working)"] =
+        extractTime(findValue(lastSP, ["ARRIVAL"]));
+      out["As Pass\nArr Stn(After working)"] =
+        findValue(lastSP, ["SIGNOFF STTN"]);
     }
 
-    // PART 6
-    const last=rows.at(-1);
-    out["OFF Time"]=extractTime(findValue(last,["SIGNOFF DATE"]));
-    out["Off Stn"]=findValue(last,["SIGNOFF STTN"]);
+    // ---------------- PART 6 (SIGN OFF — LAST ROW) ----------------
+    const lastRow = rows[rows.length - 1];
+    out["OFF Time"] =
+      extractTime(findValue(lastRow, ["SIGNOFF DATE"]));
+    out["Off Stn"] =
+      findValue(lastRow, ["SIGNOFF STTN"]);
 
     resultData.push(out);
   });
