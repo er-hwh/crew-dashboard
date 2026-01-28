@@ -119,6 +119,17 @@ tbody td:first-child {
   margin-left: 6px;
 }
 
+/* Highlight NO-WR rows */
+.no-wr-row {
+  background: #ffe5e5 !important;
+}
+.no-wr-row td {
+  border-color: #dc3545 !important;
+}
+.no-wr-row td:first-child {
+  background: #ffd6d6 !important;
+}
+
 /* Print */
 @media print {
   body { background: white; }
@@ -183,6 +194,30 @@ tbody td:first-child {
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+/* ===================== HWH STATION JSON (INLINE) ===================== */
+const HWH_STATIONS = new Set([
+  "ABGM","ABKA","ACLE","ADST","AGAE","AJLE","ALPD","AMBG","AMP","ARNB","AZ",
+  "BAA","BAHW","BBAE","BCF","BCGM","BDC","BDH","BEQ","BESY","BFZ","BGAE",
+  "BGF","BGNA","BGRA","BHLA","BHP","BHR","BLAE","BLY","BMAE","BOI","BPAE",
+  "BPS","BQY","BRIP","BRMA","BRMH","BRPA","BSAE","BSBR","BSLE","BSMH",
+  "BTNG","BTRH","BWN","BZL","BZLE","CCRL","CDAE","CGR","CHC","CMDG","CNS",
+  "CRAE","CTR","CWLE","CWT","DBP","DEA","DHAE","DHPD","DKAE","DLM","DMLE",
+  "DNHL","DTAE","GBRA","GFAE","GGLE","GHLE","GKH","GMAN","GNJP","GNND",
+  "GOGT","GPAE","GLPG","GRAE","GRP","GSGB","HGY","HIH","HMZ","HPL","HRNS",
+  "HWH","HWHG","HYG","IPRA","JHBN","JIT","JOX","JPQ","JRAE","JRBI","JTL",
+  "JVT","KAN","KCY","KGLE","KHN","KJRA","KJRM","KJU","KKAE","KLNT","KLP",
+  "KMAE","KMDC","KMPR","KMRA","KNHR","KNSN","KOG","KPLE","KQLF","KQU",
+  "KSHT","KTLR","KURV","KWAE","KZPE","LILUAH","LAP","LBP","LCAE","LKX",
+  "LLH","LOK","MAYP","MBE","MDSE","MGAE","MYPR","MHTR","MIAN","MLV","MLYA",
+  "MRR","MSAE","MTF","MUG","MUU","MYM","NBAE","NBKH","NDAE","NDIM","NGF",
+  "NGX","NHT","NKL","NLSE","NMF","NRX","NSF","NXL","PBZ","PCQ","PDA","PKR",
+  "PLAE","PNDI","PNE","PRAE","PRGR","PSAE","PTAE","RCD","RIS","RJG","RPH",
+  "RSLR","SALE","SDI","SDLE","SHBA","SHBC","SHBL","SHE","SIU","SIZ","SKG",
+  "SKIP","SLG","SMAE","SNT","SOAE","SOF","SPS","SRP","SYAE","TAK","TBAE",
+  "TBB","TTT","TKP","TKPH","TLO","TLPH","TPF","TYAE","UPA","VSPR"
+]);
+
+/* ===================== CONFIG ===================== */
 const TEMPLATE_HEADERS = [
   "Sl","Crew ID","Crew Name","Train No","Loco",
   "Date","ON Time","ON Stn",
@@ -203,7 +238,7 @@ const TEMPLATE_HEADERS = [
 let resultData = [];
 let dataTableInstance = null;
 
-// Render headers
+/* ===================== RENDER HEADERS ===================== */
 const headerRow = document.getElementById("headerRow");
 TEMPLATE_HEADERS.forEach(h => {
   const th = document.createElement("th");
@@ -211,7 +246,7 @@ TEMPLATE_HEADERS.forEach(h => {
   headerRow.appendChild(th);
 });
 
-// Helpers
+/* ===================== HELPERS ===================== */
 function clean(k){ return k.toLowerCase().replace(/[^a-z0-9]/g,""); }
 
 function findValue(row, aliases){
@@ -243,7 +278,48 @@ function parseSignOnDate(v){
   return {date,time:extractTime(t)};
 }
 
-// Submit
+function inHWH(stn){
+  return HWH_STATIONS.has((stn||"").toUpperCase().trim());
+}
+
+function mapINTByRules(out){
+  const onStn  = (out["ON Stn"] || "").toUpperCase().trim();
+  const ctoStn = (out["CTO/DEP Stn"] || "").toUpperCase().trim();
+  const mocStn = (out["MOC Stn"] || "").toUpperCase().trim();
+  const offStn = (out["Off Stn"] || "").toUpperCase().trim();
+
+  const stations = [onStn, ctoStn, mocStn, offStn];
+  const train = (out["Train No"] || "").toUpperCase();
+
+  const AZ_EXCEPTION_LIST = ["MLDT", "GALE", "MGLE", "SBG"];
+
+  // ================= EXCEPTION RULE (HIGHEST PRIORITY) =================
+  // CTO/DEP = AZ AND (MOC OR OFF in MLDT/GALE/MGLE/SBG) → PRDG
+  if (
+    ctoStn === "AZ" &&
+    (AZ_EXCEPTION_LIST.includes(mocStn) ||
+     AZ_EXCEPTION_LIST.includes(offStn))
+  ) {
+    return "PRDG";
+  }
+
+  // ================= NORMAL RULES =================
+  for (let s of stations) {
+    if (["MGLE", "GALE"].includes(s)) return "GSGB";
+    if (s === "ADL") return "BTNG";
+    if (["TDLE", "SBG", "CLG"].includes(s)) return "GMAN";
+    if (["UDL", "PAW"].includes(s)) return "SNT";
+    if (["DUMK", "BGP"].includes(s)) return "DUMK";
+
+    if (s === "MLDT") {
+      return train.includes("GSGB") ? "GSGB" : "GMAN";
+    }
+  }
+
+  return "";
+}
+
+/* ===================== SUBMIT ===================== */
 function submitSource(){
   resultData=[];
   document.querySelector("#resultTable tbody").innerHTML="";
@@ -261,6 +337,7 @@ function submitSource(){
     const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array"});
     const sh=wb.Sheets[wb.SheetNames[0]];
     const aoa=XLSX.utils.sheet_to_json(sh,{header:1,defval:""});
+
     let hi=-1;
     for(let i=0;i<aoa.length;i++){
       if(clean(aoa[i][0]||"")==="sno"){ hi=i; break; }
@@ -269,7 +346,9 @@ function submitSource(){
 
     const headers=aoa[hi];
     const rows=aoa.slice(hi+1).map(r=>{
-      const o={}; headers.forEach((h,i)=>{ if(h) o[h]=r[i]; }); return o;
+      const o={};
+      headers.forEach((h,i)=>{ if(h) o[h]=r[i]; });
+      return o;
     });
 
     generateResult(rows);
@@ -279,149 +358,125 @@ function submitSource(){
   r.readAsArrayBuffer(f);
 }
 
-// ---------- CORE LOGIC (UPDATED PART 3 + WORKING + NO-WR CASE) ----------
+/* ===================== CORE LOGIC ===================== */
 function generateResult(sourceRows){
-  resultData = [];
-
-  // Group by S.No
-  const groups = {};
-  sourceRows.forEach(r => {
-    const keys = Object.keys(r || {});
-    if (!keys.length) return;
-    const sn = r[keys[0]];
-    if (!sn) return;
-    if (!groups[sn]) groups[sn] = [];
+  const groups={};
+  sourceRows.forEach(r=>{
+    const sn=r[Object.keys(r)[0]];
+    if(!sn) return;
+    if(!groups[sn]) groups[sn]=[];
     groups[sn].push(r);
   });
 
-  Object.keys(groups).forEach(sn => {
-    const rows = groups[sn];
-    const first = rows[0];
+  Object.keys(groups).forEach(sn=>{
+    const rows=groups[sn];
+    const first=rows[0];
+    const out={};
+    TEMPLATE_HEADERS.forEach(h=>out[h]="");
 
-    const out = {};
-    TEMPLATE_HEADERS.forEach(h => out[h] = "");
+    const WR_TYPES=["WR","LR","KH","YR","WT"];
+    const isWR=r=>WR_TYPES.includes(findValue(r,["DUTY TYPE"]));
+    const isSP=r=>findValue(r,["DUTY TYPE"])==="SP";
+    const noCTO=r=>["YR","WT"].includes(findValue(r,["DUTY TYPE"]));
 
-    // ---------------- PART 1 ----------------
-    out["Sl"] = sn;
-    out["Crew ID"] = findValue(first, ["CREW ID"]);
-    out["Crew Name"] = findValue(first, ["NAME"]);
+    // PART 1
+    out["Sl"]=sn;
+    out["Crew ID"]=findValue(first,["CREW ID"]);
+    out["Crew Name"]=findValue(first,["NAME"]);
+    const tr=rows.find(r=>isWR(r))||rows.find(r=>findValue(r,["TRAIN NO"]));
+    out["Train No"]=tr?findValue(tr,["TRAIN NO"]):"";
+    const lr=rows.find(r=>findValue(r,["LOCO NO"]));
+    out["Loco"]=lr?findValue(lr,["LOCO NO"]):"";
 
-    // Prefer WR train no, fallback any
-    let trainRow = rows.find(r => findValue(r, ["DUTY TYPE"]) === "WR");
-    if (!trainRow) trainRow = rows.find(r => findValue(r, ["TRAIN NO"]));
-    out["Train No"] = trainRow ? findValue(trainRow, ["TRAIN NO"]) : "";
+    // PART 2
+    const p=parseSignOnDate(findValue(first,["SIGNON DATE"]));
+    out["Date"]=p.date;
+    out["ON Time"]=p.time;
+    out["ON Stn"]=findValue(first,["SIGNON STTN"]);
 
-    // First available loco
-    const locoRow = rows.find(r => findValue(r, ["LOCO NO"]));
-    out["Loco"] = locoRow ? findValue(locoRow, ["LOCO NO"]) : "";
-
-    // ---------------- PART 2 ----------------
-    const p = parseSignOnDate(findValue(first, ["SIGNON DATE"]));
-    out["Date"] = p.date;
-    out["ON Time"] = p.time;
-    out["ON Stn"] = findValue(first, ["SIGNON STTN"]);
-
-    // ---------------- DUTY TYPE HELPERS ----------------
-    const isWR = r => findValue(r, ["DUTY TYPE"]) === "WR";
-    const isSP = r => findValue(r, ["DUTY TYPE"]) === "SP";
-
-    // WR Equivalents
-    const isEquivalentWR = r => {
-      const d = findValue(r, ["DUTY TYPE"]);
-      return ["WR", "LR", "KH", "YR", "WT"].includes(d);
-    };
-
-    // For YR/WT → CTO & CMO NOT allowed
-    const noCTO_CMO = r => {
-      const d = findValue(r, ["DUTY TYPE"]);
-      return ["YR", "WT"].includes(d);
-    };
-
-    // ---------------- PART 3 (AS PASS BEFORE WORKING) ----------------
-    const firstDuty = findValue(first, ["DUTY TYPE"]);
-    const firstWRIndex = rows.findIndex(r => isEquivalentWR(r));
-
-    const spBefore = rows
-      .slice(0, firstWRIndex === -1 ? rows.length : firstWRIndex)
-      .filter(r => isSP(r));
-
-    if (firstDuty !== "WR" && spBefore.length) {
-      const firstSP = spBefore[0];
-      const lastSP = spBefore[spBefore.length - 1];
-
-      out["AS Pass\nDep Time(Before working)"] =
-        extractTime(findValue(firstSP, ["DEPARTURE"]));
-      out["As Pass\nDep Stn\n(Before working)"] =
-        findValue(firstSP, ["SIGNON STTN"]);
-      out["As Pass\nArr Time(Before working)"] =
-        extractTime(findValue(lastSP, ["ARRIVAL"]));
-      out["As Pass\nArr Stn(Before working)"] =
-        findValue(lastSP, ["SIGNOFF STTN"]);
+    // PART 3
+    const wrIdx=rows.findIndex(r=>isWR(r));
+    const spBefore=rows.slice(0,wrIdx===-1?rows.length:wrIdx).filter(isSP);
+    if(findValue(first,["DUTY TYPE"])!=="WR" && spBefore.length){
+      out["AS Pass\nDep Time(Before working)"]=extractTime(findValue(spBefore[0],["DEPARTURE"]));
+      out["As Pass\nDep Stn\n(Before working)"]=findValue(spBefore[0],["SIGNON STTN"]);
+      out["As Pass\nArr Time(Before working)"]=extractTime(findValue(spBefore.at(-1),["ARRIVAL"]));
+      out["As Pass\nArr Stn(Before working)"]=findValue(spBefore.at(-1),["SIGNOFF STTN"]);
     }
 
-    // ---------------- WORKING PART (PART 4) ----------------
-    const wrRows = rows.filter(r => isEquivalentWR(r));
+    // PART 4
+    const wrs = rows.filter(isWR);
 
-    // Single-row duty → everything stays blank
-    if (rows.length > 1 && wrRows.length) {
-      const firstWR = wrRows[0];
-      const lastWR = wrRows[wrRows.length - 1];
+    if (wrs.length) {
+      const fw = wrs[0];              // first WR/LR/KH/YR/WT
+      const lw = wrs[wrs.length-1]; // last WR/LR/KH/YR/WT
 
-      // SUBPART 1 — Start Working
-      if (!noCTO_CMO(firstWR)) {
-        out["CTO"] = extractTime(findValue(firstWR, ["CTO"]));
+      // Start working
+      if (!noCTO(fw)) {
+        out["CTO"] = extractTime(findValue(fw, ["CTO"]));
       }
-      out["Dep"] = extractTime(findValue(firstWR, ["DEPARTURE"]));
-      out["CTO/DEP Stn"] = findValue(firstWR, ["SIGNON STTN"]);
 
-      // SUBPART 2 — INT STN → always blank (do nothing)
+      out["Dep"] = extractTime(findValue(fw, ["DEPARTURE"]));
+      out["CTO/DEP Stn"] = findValue(fw, ["SIGNON STTN"]);
 
-      // SUBPART 3 — End Working
-      out["Arr"] = extractTime(findValue(lastWR, ["ARRIVAL"]));
-      if (!noCTO_CMO(lastWR)) {
-        out["CMO"] = extractTime(findValue(lastWR, ["CMO"]));
+      // End working (even if same row)
+      out["Arr"] = extractTime(findValue(lw, ["ARRIVAL"]));
+
+      if (!noCTO(lw)) {
+        out["CMO"] = extractTime(findValue(lw, ["CMO"]));
       }
-      out["MOC Stn"] = findValue(lastWR, ["SIGNOFF STTN"]);
+
+      out["MOC Stn"] = findValue(lw, ["SIGNOFF STTN"]);
     }
 
-    // ---------------- PART 5 (AS PASS AFTER WORKING) ----------------
-    const lastWRIndex = rows.map(r => isEquivalentWR(r)).lastIndexOf(true);
-    const spAfter =
-      lastWRIndex !== -1
-        ? rows.slice(lastWRIndex + 1).filter(r => isSP(r))
-        : [];
-
-    if (spAfter.length && rows.length > 1) {
-      const firstSP = spAfter[0];
-      const lastSP = spAfter[spAfter.length - 1];
-
-      out["AS Pass\nDep Time(After working)"] =
-        extractTime(findValue(firstSP, ["DEPARTURE"]));
-      out["As Pass\nDep Stn\n(After working)"] =
-        findValue(firstSP, ["SIGNON STTN"]);
-      out["As Pass\nArr Time(After working)"] =
-        extractTime(findValue(lastSP, ["ARRIVAL"]));
-      out["As Pass\nArr Stn(After working)"] =
-        findValue(lastSP, ["SIGNOFF STTN"]);
+    // PART 5
+    const lastWR=rows.map(r=>isWR(r)).lastIndexOf(true);
+    const spAfter=lastWR!==-1?rows.slice(lastWR+1).filter(isSP):[];
+    if(spAfter.length && rows.length>1){
+      out["AS Pass\nDep Time(After working)"]=extractTime(findValue(spAfter[0],["DEPARTURE"]));
+      out["As Pass\nDep Stn\n(After working)"]=findValue(spAfter[0],["SIGNON STTN"]);
+      out["As Pass\nArr Time(After working)"]=extractTime(findValue(spAfter.at(-1),["ARRIVAL"]));
+      out["As Pass\nArr Stn(After working)"]=findValue(spAfter.at(-1),["SIGNOFF STTN"]);
     }
 
-    // ---------------- PART 6 (SIGN OFF — LAST ROW) ----------------
-    const lastRow = rows[rows.length - 1];
-    out["OFF Time"] =
-      extractTime(findValue(lastRow, ["SIGNOFF DATE"]));
-    out["Off Stn"] =
-      findValue(lastRow, ["SIGNOFF STTN"]);
+    // PART 6
+    const last=rows.at(-1);
+    out["OFF Time"]=extractTime(findValue(last,["SIGNOFF DATE"]));
+    out["Off Stn"]=findValue(last,["SIGNOFF STTN"]);
 
+    // ===================== NEW INT STN LOGIC =====================
+
+    // RULE 1: If BOTH source stations are in HWH division
+    const signOnSrc = findValue(first, ["SIGNON STTN"]);
+    const signOffSrc = findValue(rows.at(-1), ["SIGNOFF STTN"]);
+
+    if (inHWH(signOnSrc) && inHWH(signOffSrc)) {
+      out["INT STN ARR"] = "00:00";
+      out["INT STN DEP"] = "00:00";
+      out["INT Stn"] = "NA";
+    } else {
+      // RULE 2: Special station mapping
+      const mapped = mapINTByRules(out);
+      if (mapped) {
+        out["INT Stn"] = mapped;
+      }
+    }
+
+    out.__noWR = !wrs.length;
     resultData.push(out);
   });
 }
 
-// Render
+/* ===================== RENDER ===================== */
 function renderTable(){
   const tb=document.querySelector("#resultTable tbody");
   tb.innerHTML="";
-  resultData.forEach((r)=>{
+  resultData.forEach(r=>{
     const tr=document.createElement("tr");
+    if(r.__noWR){
+      tr.classList.add("no-wr-row");
+      tr.title="No WR/LR/KH/YR/WT duty found";
+    }
     TEMPLATE_HEADERS.forEach(h=>{
       const td=document.createElement("td");
       td.contentEditable=true;
@@ -434,7 +489,7 @@ function renderTable(){
   });
 }
 
-// Init DataTable
+/* ===================== DATATABLE ===================== */
 function initDataTable(){
   dataTableInstance = $('#resultTable').DataTable({
     pageLength: 10,
@@ -449,7 +504,7 @@ function initDataTable(){
   });
 }
 
-// Download
+/* ===================== DOWNLOAD ===================== */
 function downloadResult(){
   if(!resultData.length){ alert("No data"); return; }
   const ws=XLSX.utils.aoa_to_sheet([
