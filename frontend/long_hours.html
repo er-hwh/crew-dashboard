@@ -141,6 +141,48 @@ tbody td:first-child {
     max-height: none;
   }
 }
+
+/* ===== REMARKS COLUMN WIDTH CONTROL ===== */
+
+/* ================= REMARKS COLUMN FIX ================= */
+
+/* MAIN TABLE */
+#resultTable th:last-child,
+#resultTable td:last-child{
+  width: 340px !important;
+  min-width: 340px !important;
+  max-width: 340px !important;
+
+  text-align: left !important;
+  vertical-align: top !important;
+
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+/* CREW REPORT TABLE */
+#crewReportTable th:last-child,
+#crewReportTable td:last-child{
+  width: 340px !important;
+  min-width: 340px !important;
+  max-width: 340px !important;
+
+  text-align: left !important;
+  vertical-align: top !important;
+
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+#crewReportTable th:last-child{
+  min-width: 520px !important;
+}
+
+#crewReportTable td:last-child{
+  min-width: 520px !important;
+  white-space: pre-line;
+}
+
 </style>
 </head>
 
@@ -167,24 +209,113 @@ tbody td:first-child {
       <input type="file" id="sourceFile" class="form-control form-control-sm" accept=".xlsx">
     </div>
     <div class="d-flex gap-2">
-      <button class="btn btn-sm btn-primary" onclick="submitSource()">
-        <i class="fa-solid fa-play"></i> Generate Table
-      </button>
-      <button class="btn btn-sm btn-success" onclick="downloadResult()">
-        <i class="fa-solid fa-download"></i> Download Excel
-      </button>
+    <button class="btn btn-sm btn-primary" onclick="submitSource()">
+      <i class="fa-solid fa-play"></i> Generate Table (Long Hours Sheet)
+    </button>
+
+    <button class="btn btn-sm btn-warning" onclick="generateCrewReport()">
+      <i class="fa-solid fa-file-lines"></i> All in one Report Generator
+    </button>
+
+  </div>
+  </div>
+</div>
+
+<div class="mt-3">
+
+  <div class="header-box d-flex justify-content-between align-items-center py-2 px-3">
+    <h5 class="mb-0">
+      <i class="fa-solid fa-table"></i> CMS Converted Sheet
+    </h5>
+
+    <button class="btn btn-sm btn-light border"
+            data-bs-toggle="modal"
+            data-bs-target="#columnModal">
+      <i class="fa-solid fa-file-excel text-success"></i> Download Excel
+    </button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-sm" id="resultTable">
+      <thead>
+        <tr id="headerRow"></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+</div>
+
+<div id="crewReportContainer" class="mt-4" style="display:none">
+
+  <div class="header-box d-flex justify-content-between align-items-center py-2 px-3">
+  <h5 class="mb-0">
+      <i class="fa-solid fa-clipboard-list"></i> Crew Duty Report
+  </h5>
+
+  <button class="btn btn-sm btn-light border" onclick="downloadCrewReport()">
+      <i class="fa-solid fa-file-excel text-success"></i> Download Report
+  </button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-sm" id="crewReportTable">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+</div>
+
+
+<!-- COLUMN SELECT MODAL -->
+<div class="modal fade" id="columnModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Select Extra Columns</h5>
+        <!-- NEW CLOSE BUTTON -->
+      <!-- <button type="button" class="btn-close" id="extraColumnModalClose"></button> -->
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small mb-2">
+    Tick the fields you want in Excel export.  
+    Unchecked columns will NOT be included.  
+    Preview table also shows these calculated fields.
+    </p>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="optSignOff" checked>
+          <label class="form-check-label">Sign Off Date</label>
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="optKM" checked>
+          <label class="form-check-label">Working KM</label>
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="optSection" checked>
+          <label class="form-check-label">Section</label>
+        </div>
+
+        <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="optWorkingSection" checked>
+      <label class="form-check-label">Working Section</label>
+    </div>
+
+        <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="optRemarks" checked>
+      <label class="form-check-label">Remarks</label>
+    </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success" onclick="downloadResultFinal()" data-bs-dismiss="modal">Download</button>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="table-responsive">
-<table class="table table-bordered table-sm" id="resultTable">
-  <thead>
-    <tr id="headerRow"></tr>
-  </thead>
-  <tbody></tbody>
-</table>
-</div>
 
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -192,6 +323,7 @@ tbody td:first-child {
 <!-- DataTables -->
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 /* ===================== HWH STATION JSON (INLINE) ===================== */
@@ -217,6 +349,24 @@ const HWH_STATIONS = new Set([
   "TBB","TTT","TKP","TKPH","TLO","TLPH","TPF","TYAE","UPA","VSPR"
 ]);
 
+/* ===== CREW REPORT TIME HELPERS ===== */
+function tmin(t){
+ if(!t) return null;
+ let [h,m]=t.split(":").map(Number);
+ return h*60+m;
+}
+
+function thhmm(m){
+ if(m==null) return "";
+ m=(m+1440)%1440;
+ return String(Math.floor(m/60)).padStart(2,'0')+":"+String(m%60).padStart(2,'0');
+}
+
+function tdiff(a,b){
+ if(!a||!b) return "";
+ return thhmm(tmin(b)-tmin(a));
+}
+
 /* ===================== CONFIG ===================== */
 const TEMPLATE_HEADERS = [
   "Sl","Crew ID","Crew Name","Train No","Loco",
@@ -239,12 +389,193 @@ let resultData = [];
 let dataTableInstance = null;
 
 /* ===================== RENDER HEADERS ===================== */
+const EXTRA_HEADERS = ["Sign Off Date","Working KM","Section","Working Section","Remarks"];
+
 const headerRow = document.getElementById("headerRow");
-TEMPLATE_HEADERS.forEach(h => {
+[...TEMPLATE_HEADERS, ...EXTRA_HEADERS].forEach(h => {
   const th = document.createElement("th");
   th.innerText = h;
   headerRow.appendChild(th);
 });
+
+const WORKING_SECTION_RULES = [
+
+  { name:"RPH-BWN",
+    on:["RPH","PKR"],
+    moc:["TPF","MLV","GHLE","SNT","BSLE","AMP","KPLE","PNE","BHP","BDH","PCQ","GKH","NRX","BPS","JTL","KAN","TIT","BWN"],
+    off:["BWN","RPH","BHP","SNT"]
+  },
+
+  { name:"BWN-RPH",
+    on:["BWN","BHP"],
+    moc:["RPH","TPF","MLV","GHLE","SNT","BSLE","AMP","KPLE","PNE","BHP","BDH","PCQ","GKH","NRX","BPS","JTL","KAN","TIT","BWN"],
+    off:["BWN","RPH","BHP","SNT"]
+  },
+
+  { name:"RPH-PKR",
+    on:["RPH"],
+    moc:["SDLE","NHT","CTR","MRR","BSBR","RJG","NGF","PKR","TBB","KLP","GMAN"],
+    off:["PKR","RPH"]
+  },
+
+  { name:"PKR-RPH",
+    on:["PKR"],
+    moc:["RPH","SDLE","NHT","CTR","MRR","BSBR","RJG","NGF","PKR","TBB","KLP","GMAN"],
+    off:["PKR","RPH"]
+  },
+
+  // ---- DIVISION RULE ----
+  { name:"MLDT DIVISION",
+    on:["GALE","MCCS","MGLE","MLDT","SBG","BHW","TDLE"],
+    moc:null,
+    off:["GALE","MCCS","MGLE","MLDT","SBG","BHW","TDLE"]
+  },
+
+  { name:"ASN DIVISION",
+    on:["UDL","PAW"],
+    moc:["MWZ","KNRI","SURI","KOX","CPLE","DUJ","PCR","DMGA","PAW","UKA","KJME","UDL"],
+    off:["UDL","PAW"]
+  },
+
+  { name:"KGP DIVISION",
+    on:["ADL"],
+    moc:["BALT","BKNM","BKNC","MRGM","ADL"],
+    off:["ADL"]
+  },
+
+  { name:"RPH-AZ",
+  on:["RPH","BWN","BHP"],
+  moc:["TKP","LAP","MGAE","SDI","BAA","GSGB"],
+  off:["AZ","RPH","PKR"]
+  },
+
+  { name:"AZ-RPH",
+  on:["RPH","BWN","BHP","AZ"],
+  moc:["TKP","LAP","MGAE","SDI","BAA","GSGB"],
+  off:["RPH"]
+  },
+
+  { name:"RPH-KURV",
+  on:["RPH"],
+  moc:["ALPD","PRGR","HRNS","SKIP","BRMA","KURV"],
+  off:["RPH","KURV"]
+  },
+
+  { name:"KURV-RPH",
+  on:["KURV"],
+  moc:["ALPD","PRGR","HRNS","SKIP","BRMA","KURV"],
+  off:["RPH"]
+  },
+
+  { name:"RPH-ADL",
+  on:["RPH","BWN","BHP"],
+  moc:["BALT","BKNM","BKNC","MRGM","ADL"],
+  off:["ADL","DKAE","HWH","BWN","RPH"]
+  },
+
+  { name:"ADL-BWN",
+  on:["ADL"],
+  moc:["BALT","BKNM","BKNC","MRGM","ADL"],
+  off:["DKAE","HWH","BWN","RPH"]
+  },
+
+  { name:"DKAE-ADL",
+  on:["DKAE"],
+  moc:["BALT","BKNM","BKNC","MRGM","ADL"],
+  off:["ADL","DKAE","HWH","BWN","RPH"]
+  },
+
+  { name:"RPH-MLDT",
+  on:["RPH","BWN","PKR"],
+  moc:["BDLC","BHW","BKLE","NFK","CMX","KTJ","JMQ","GZM","MLDT","JRLE","AHN","SPLE","NILE","BDBP","DGLE","SXP","BPBS"],
+  off:["MLDT","RPH","PKR"]
+  },
+
+  { name:"MLDT-RPH",
+  on:["MLDT"],
+  moc:["RPH","SDLE","NHT","CTR","MRR","BSBR","RJG","NGF","PKR","TBB","KLP","GMAN","BDLC","BDAG","TDLE","NFK","CMX","KTJ","JMQ","GZM","MLDT"],
+  off:["RPH","PKR","BWN","BHP","SNT","NHT"]
+  },
+
+  { name:"RPH-TDLE",
+  on:["RPH","BWN","BHP","PKR"],
+  moc:["BDLC","BDAG","TDLE"],
+  off:["TDLE","RPH","PKR"]
+  },
+
+  { name:"TDLE-RPH",
+  on:["TDLE"],
+  moc:["RPH","SDLE","NHT","CTR","MRR","BSBR","RJG","NGF","PKR","TBB","KLP","GMAN","BDLC","BDAG","TDLE"],
+  off:["RPH","PKR","BWN","BHP","SNT","NHT"]
+  },
+
+  { name:"RPH-DUMK",
+  on:["RPH","BWN","BHP","PKR"],
+  moc:["RPH","ALPD","PRGR","HRNS","SKIP","BRMA","KURV","DUMK"],
+  off:["DUMK"]
+  },
+
+  { name:"DUMK-RPH",
+  on:["DUMK"],
+  moc:["RPH","ALPD","PRGR","HRNS","SKIP","BRMA","KURV"],
+  off:["KURV","RPH","PKR","BWN","DUMK"]
+  },
+
+  { name:"RPH-UDL",
+  on:["RPH","BHP","PKR"],
+  moc:["MWZ","KNRI","SURI","KOX","CPLE","DUJ","PCR","DMGA","PAW","UKA","KJME","UDL"],
+  off:["UDL","PAW","RPH","BWN"]
+  },
+
+  { name:"RPH-SBG",
+  on:["RPH","BWN","BHP","PKR"],
+  moc:["BDLC","BHW","BKLE","DDX","TPH","KXE","TLJ","KPTO","MJP","SLJ","SBG"],
+  off:["SBG","RPH","PKR"]
+  },
+
+  { name:"SBG-RPH",
+  on:["SBG","BHW"],
+  moc:["RPH","SDLE","NHT","CTR","MRR","BSBR","RJG","NGF","PKR","TBB","KLP","GMAN","BDLC","BHW","BKLE","DDX","TPH","KXE","TLJ","KPTO","MJP","SLJ","SBG"],
+  off:["RPH","PKR","BWN"]
+  },
+
+  { name:"RPH-BGP",
+  on:["RPH","BWN","BHP","PKR"],
+  moc:["MPUR","BRPS","NNHT","KUMT","HSDA","KADL","DANE","PETA","MDLE","MDVB","PJLE","BHLE","PNSA","PADH","DWLE","BGP"],
+  off:["BGP"]
+  },
+
+  { name:"BGP-RPH",
+  on:["BGP"],
+  moc:["RPH","ALPD","PRGR","HRNS","SKIP","BRMA","KURV","DUMK","MPUR","BRPS","NNHT","KUMT","HSDA","KADL","DANE","PETA","MDLE","MDVB","PJLE","BHLE","PNSA","PADH","DWLE","BGP"],
+  off:["KURV","RPH","PKR"]
+  },
+
+  { name:"RPH-MCCS",
+  on:["RPH","BWN","PKR"],
+  moc:["PRDG","MPLR","MPLE","NWMS","MGLE","GALE"],
+  off:["GALE","MCCS"]
+  },
+
+  { name:"MCCS-RPH",
+  on:["GALE","MCCS"],
+  moc:["RPH","SDLE","NHT","TKP","LAP","MGAE","SDI","BAA","GSGB","PRDG","MPLR","MPLE","NWMS","MGLE"],
+  off:["AZ","RPH","PKR","BWN","NHT"]
+  },
+
+  { name:"RPH-MGLE",
+  on:["RPH","BWN","PKR"],
+  moc:["PRDG","MPLR","MPLE","NWMS","MGLE"],
+  off:["MGLE"]
+  },
+
+  { name:"MGLE-RPH",
+  on:["MGLE"],
+  moc:["RPH","SDLE","NHT","TKP","LAP","MGAE","SDI","BAA","GSGB","PRDG","MPLR","MPLE","NWMS","MGLE"],
+  off:["AZ","RPH","PKR","BWN","NHT"]
+  }
+
+];
 
 /* ===================== HELPERS ===================== */
 function clean(k){ return k.toLowerCase().replace(/[^a-z0-9]/g,""); }
@@ -256,6 +587,11 @@ function findValue(row, aliases){
     if (f && row[f] !== "") return row[f];
   }
   return "";
+}
+
+function getVal(obj, label){
+  const key = Object.keys(obj).find(k => clean(k) === clean(label));
+  return key ? obj[key] : "";
 }
 
 function extractTime(v){
@@ -463,6 +799,7 @@ function generateResult(sourceRows){
     }
 
     out.__noWR = !wrs.length;
+    out.__rows = rows;
     resultData.push(out);
   });
 }
@@ -477,14 +814,16 @@ function renderTable(){
       tr.classList.add("no-wr-row");
       tr.title="No WR/LR/KH/YR/WT duty found";
     }
-    TEMPLATE_HEADERS.forEach(h=>{
-      const td=document.createElement("td");
-      td.contentEditable=true;
-      td.className="editable";
-      td.innerText=r[h]||"";
-      td.oninput=()=>r[h]=td.innerText.trim();
-      tr.appendChild(td);
-    });
+    applyExtraColumns(r);   // <---- add calculation before showing
+
+  [...TEMPLATE_HEADERS, "Sign Off Date","Working KM","Section","Working Section","Remarks"].forEach(h=>{
+    const td=document.createElement("td");
+    td.contentEditable=true;
+    td.className="editable";
+    td.innerText=r[h]||"";
+    td.oninput=()=>r[h]=td.innerText.trim();
+    tr.appendChild(td);
+  });
     tb.appendChild(tr);
   });
 }
@@ -505,16 +844,366 @@ function initDataTable(){
 }
 
 /* ===================== DOWNLOAD ===================== */
-function downloadResult(){
+function downloadResultFinal(){
+
   if(!resultData.length){ alert("No data"); return; }
+
+  const headers=[...TEMPLATE_HEADERS];
+
+  if(optSignOff.checked) headers.push("Sign Off Date");
+  if(optKM.checked) headers.push("Working KM");
+  if(optSection.checked) headers.push("Section");
+  if(optWorkingSection.checked) headers.push("Working Section");
+  if(optRemarks.checked) headers.push("Remarks");
+
+  resultData.forEach(r=>applyExtraColumns(r));
+
   const ws=XLSX.utils.aoa_to_sheet([
-    TEMPLATE_HEADERS,
-    ...resultData.map(r=>TEMPLATE_HEADERS.map(h=>r[h]||""))
+    headers,
+    ...resultData.map(r=>headers.map(h=>r[h]||""))
   ]);
+
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"RESULT");
   XLSX.writeFile(wb,"RESULT.xlsx");
+
 }
+function applyExtraColumns(out){
+
+  const rows = out.__rows;
+  if(!rows) return;
+
+  const first = rows[0];
+  const last  = rows.at(-1);
+
+  // SIGN OFF DATE
+  let raw = findValue(last,["SIGNOFF DATE"]);
+  if(raw){
+    const d = raw.toString().split(" ")[0]
+      .replace(/\//g,"-").replace(/\./g,"-").split("-");
+    if(d.length===3)
+      out["Sign Off Date"] = d[0].padStart(2,"0")+"-"+d[1].padStart(2,"0")+"-"+d[2];
+  }
+
+  // WORKING KM
+  let km=0;
+  rows.forEach(r=>{
+    const duty=findValue(r,["DUTY TYPE"]);
+    if(["WR","YR","KH","LR"].includes(duty)){
+      const v=parseFloat(findValue(r,["ROUTE KM","KM","DISTANCE","S"]));
+      if(!isNaN(v)) km+=v;
+    }
+  });
+  out["Working KM"]=km?km.toFixed(2):"";
+
+  // SECTION
+  const on  = findValue(first,["SIGNON STTN"]);
+  const off = findValue(last,["SIGNOFF STTN"]);
+
+  const inOn  = inHWH(on);
+  const inOff = inHWH(off);
+
+  if(inOn && inOff) out["Section"]="DIV";
+  else if(inOn && !inOff) out["Section"]="HWH-OTH";
+  else if(!inOn && inOff) out["Section"]="OTH-HWH";
+  else out["Section"]="OTH DIV";
+
+  // ===== REMARKS AUTO GENERATE =====
+  const pdd   = out["AS Pass\nDep Time(Before working)"] ? "00:00" : tdiff(out["ON Time"],out["Dep"]);
+  const wheel = tdiff(out["Dep"],out["Arr"]);
+  const pad   = out["AS Pass\nDep Time(After working)"] ? "00:00" : tdiff(out["Arr"],out["OFF Time"]);
+
+  // placeholder (logic later)
+  if(!out["Working Section"])
+  out["Working Section"]="";
+
+  out["Remarks"] = buildRemarks(out,pdd,pad,wheel).replace(/<br>/g,"\n");
+  out["Working Section"] = detectWorkingSection(
+  out["ON Stn"],     // column H
+  out["MOC Stn"],    // column U
+  out["Off Stn"]     // column AA
+  );
+  
+}
+
+/* ================= CREW DUTY REPORT ================= */
+
+function generateCrewReport(){
+
+ if(!resultData.length){
+   alert("Generate table first");
+   return;
+ }
+
+ document.getElementById("crewReportContainer").style.display="block";
+
+ const headers=[
+ "SL No.","Date","Train No./Loco No.","Name of crew/HQ",
+ "Sign on Time","Sign on Place","Departure (Train working)",
+ "Arrival (Train working)","Sign off Time","Sign off Place",
+ "PDD","Wheel movement","PAD","Total duty hours(Hrs)",
+ "Interchange point & Time","Remarks"
+ ];
+
+ const thead=document.querySelector("#crewReportTable thead");
+ thead.innerHTML="<tr>"+headers.map(h=>`<th>${h}</th>`).join("")+"</tr>";
+
+ renderCrewRows();
+}
+
+
+function renderCrewRows(){
+
+ const tbody=document.querySelector("#crewReportTable tbody");
+ tbody.innerHTML="";
+
+ resultData.forEach((r,i)=>{
+
+  const pdd   = r["AS Pass\nDep Time(Before working)"] ? "00:00" : tdiff(r["ON Time"],r["Dep"]);
+  const wheel = tdiff(r["Dep"],r["Arr"]);
+  const pad   = r["AS Pass\nDep Time(After working)"] ? "00:00" : tdiff(r["Arr"],r["OFF Time"]);
+  const total = tdiff(r["ON Time"],r["OFF Time"]);
+
+  let interchange = "";
+
+  if(r["Section"]==="DIV"){
+  interchange="NA";
+  } else {
+  interchange = r["INT Stn"] ? `${r["INT Stn"]} / (${tdiff(r["INT STN ARR"],r["INT STN DEP"])})`
+      : "";
+  }
+
+  const remarks = buildRemarks(r,pdd,pad,wheel).replace(/<br>/g,"\n");
+
+  const rowData = [
+    i+1,
+    r["Date"]||"",
+    `${r["Train No"]||""}/${r["Loco"]||""}`,
+    r["Crew Name"]||"",
+    r["ON Time"]||"",
+    r["ON Stn"]||"",
+    r["Dep"]||"",
+    r["Arr"]||"",
+    r["OFF Time"]||"",
+    r["Off Stn"]||"",
+    pdd,
+    wheel,
+    pad,
+    total,
+    interchange,
+    remarks
+  ];
+
+  const tr=document.createElement("tr");
+
+  rowData.forEach((val,ci)=>{
+    const td=document.createElement("td");
+    td.innerText=val;
+
+    // SL no not editable
+    if(ci!==0){
+      td.contentEditable=true;
+      td.classList.add("editable");
+
+      td.oninput=()=>{
+        // only remarks edit will store
+        if(ci===15){
+          r.__manualRemarks = td.innerText;
+        }
+      };
+    }
+
+    tr.appendChild(td);
+  });
+
+  tbody.appendChild(tr);
+ });
+}
+
+function buildRemarks(r,pdd,pad,wheel){
+
+  let txt="";
+
+  const onStn  = getVal(r,"ON Stn");
+  const onTime = getVal(r,"ON Time");
+  const dep    = getVal(r,"Dep");
+  const arr    = getVal(r,"Arr");
+  const offT   = getVal(r,"OFF Time");
+  const offStn = getVal(r,"Off Stn");
+
+  const cto    = getVal(r,"CTO");
+  const ctoStn = getVal(r,"CTO/DEP Stn");
+  const moc    = getVal(r,"CMO");
+  const mocStn = getVal(r,"MOC Stn");
+
+  const passDepB = getVal(r,"As Pass Dep Time(Before working)");
+  const passArrB = getVal(r,"As Pass Arr Time(Before working)");
+  const passArrStnB = getVal(r,"As Pass Arr Stn(Before working)");
+
+  const passDepA = getVal(r,"As Pass Dep Time(After working)");
+  const passArrA = getVal(r,"As Pass Arr Time(After working)");
+  const passArrStnA = getVal(r,"As Pass Arr Stn(After working)");
+
+  txt+=`Train work ${onStn} - ${mocStn||offStn}\n\n`;
+
+  txt+=`S/ON ${onStn} ${onTime} hrs\n`;
+
+  if(passDepB)
+  txt+=`As Pass ${onStn} Dep ${passDepB} hrs & ${passArrStnB} Arr ${passArrB} hrs\n`;
+
+  if(cto)
+  txt+=`CTO ${ctoStn} ${cto} hrs\n`;
+
+  txt+=`DEP ${ctoStn} ${dep} hrs\n`;
+
+  if(pdd!="00:00") txt+=`\nPDD = ${pdd} hrs\n`;
+
+  /* ===== Wheel movement HERE ===== */
+  if(wheel) txt+=`\nWheel movement = ${wheel} hrs\n`;
+
+  txt+=`\nARR ${mocStn} ${arr} hrs\n`;
+
+  if(moc)
+  txt+=`MOC ${mocStn} ${moc} hrs\n`;
+
+  if(passDepA)
+  txt+=`As Pass ${mocStn} Dep ${passDepA} hrs ${passArrStnA} Arr ${passArrA} hrs\n`;
+
+  if(pad!="00:00") txt+=`\nPAD = ${pad} hrs\n`;
+
+  txt+=`\nS/OFF ${offStn} ${offT} hrs`;
+
+  if(r.__manualRemarks) return r.__manualRemarks.replace(/\n/g,"<br>");
+  return txt.replace(/\n/g,"<br>");
+}
+
+/* ================= CREW REPORT DOWNLOAD ================= */
+
+function downloadCrewReport(){
+
+ if(!resultData.length){
+   alert("Generate Crew Report first");
+   return;
+ }
+
+ const headers=[
+ "SL No.","Date","Train No./Loco No.","Name of crew/HQ",
+ "Sign on Time","Sign on Place","Departure (Train working)",
+ "Arrival (Train working)","Sign off Time","Sign off Place",
+ "PDD","Wheel movement","PAD","Total duty hours(Hrs)",
+ "Interchange point & Time","Remarks"
+ ];
+
+ const data = resultData.map((r,i)=>{
+
+  const pdd   = r["AS Pass\nDep Time(Before working)"] ? "00:00" : tdiff(r["ON Time"],r["Dep"]);
+  const wheel = tdiff(r["Dep"],r["Arr"]);
+  const pad   = r["AS Pass\nDep Time(After working)"] ? "00:00" : tdiff(r["Arr"],r["OFF Time"]);
+  const total = tdiff(r["ON Time"],r["OFF Time"]);
+
+  let interchange="";
+
+  if(r["Section"]==="DIV"){
+    interchange="NA";
+  }else{
+    interchange = r["INT Stn"] ? `${r["INT Stn"]} / (${tdiff(r["INT STN ARR"],r["INT STN DEP"])})`
+    : "";
+  }
+
+  const remarks = buildRemarks(r,pdd,pad,wheel).replace(/<br>/g,"\n");
+
+  return [
+   i+1,
+   r["Date"]||"",
+   `${r["Train No"]||""}/${r["Loco"]||""}`,
+   r["Crew Name"]||"",
+   r["ON Time"]||"",
+   r["ON Stn"]||"",
+   r["Dep"]||"",
+   r["Arr"]||"",
+   r["OFF Time"]||"",
+   r["Off Stn"]||"",
+   pdd,
+   wheel,
+   pad,
+   total,
+   interchange,
+   remarks
+  ];
+ });
+
+ const ws=XLSX.utils.aoa_to_sheet([headers,...data]);
+
+ /* column width railway style */
+ ws["!cols"]=[
+ {wch:6},{wch:10},{wch:18},{wch:22},
+ {wch:10},{wch:12},{wch:12},{wch:12},
+ {wch:12},{wch:12},{wch:10},{wch:14},
+ {wch:10},{wch:16},{wch:20},{wch:80}
+ ];
+
+ const wb=XLSX.utils.book_new();
+ XLSX.utils.book_append_sheet(wb,ws,"CREW REPORT");
+ XLSX.writeFile(wb,"Crew_Duty_Report.xlsx");
+}
+
+function detectWorkingSection(on,moc,off){
+
+  on = (on||"").trim().toUpperCase();
+  moc = (moc||"").trim().toUpperCase();
+  off = (off||"").trim().toUpperCase();
+
+  for(const r of WORKING_SECTION_RULES){
+
+    if(!r.on.includes(on)) continue;
+
+    if(r.moc && !r.moc.includes(moc)) continue;
+
+    if(!r.off.includes(off)) continue;
+
+    return r.name;
+  }
+
+  return "";
+}
+
+// CLOSE MODAL FUNCTION
+/*function closeExtraColumnModal(){
+
+    const modal = document.getElementById("extraColumnModal");
+    if(!modal) return; // <-- prevents crash
+
+    modal.classList.remove("show");
+    modal.style.display = "none";
+    document.body.classList.remove("modal-open");
+
+    document.querySelectorAll(".modal-backdrop")
+        .forEach(el => el.remove());
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const closeBtn = document.getElementById("extraColumnModalClose");
+    const modal = document.getElementById("extraColumnModal");
+    const downloadBtn = document.getElementById("downloadSelectedColumns");
+
+    if(closeBtn)
+        closeBtn.addEventListener("click", closeExtraColumnModal);
+
+    if(downloadBtn)
+        downloadBtn.addEventListener("click", closeExtraColumnModal);
+
+    if(modal)
+        modal.addEventListener("click", function(e){
+            if(e.target === modal) closeExtraColumnModal();
+        });
+
+    document.addEventListener("keydown", function(e){
+        if(e.key === "Escape") closeExtraColumnModal();
+    });
+
+});*/
+
 </script>
 
 </body>
