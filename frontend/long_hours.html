@@ -351,6 +351,7 @@ const HWH_STATIONS = new Set([
 
 /* ===== CREW REPORT TIME HELPERS ===== */
 function tmin(t){
+ t = T(t);
  if(!t) return null;
  let [h,m]=t.split(":").map(Number);
  return h*60+m;
@@ -619,18 +620,18 @@ function inHWH(stn){
 }
 
 function mapINTByRules(out){
-  const onStn  = (out["ON Stn"] || "").toUpperCase().trim();
-  const ctoStn = (out["CTO/DEP Stn"] || "").toUpperCase().trim();
-  const mocStn = (out["MOC Stn"] || "").toUpperCase().trim();
-  const offStn = (out["Off Stn"] || "").toUpperCase().trim();
+
+  const onStn  = S(out["ON Stn"]);
+  const ctoStn = S(out["CTO/DEP Stn"]);
+  const mocStn = S(out["MOC Stn"]);
+  const offStn = S(out["Off Stn"]);
+  const train  = S(out["Train No"]);
 
   const stations = [onStn, ctoStn, mocStn, offStn];
-  const train = (out["Train No"] || "").toUpperCase();
 
   const AZ_EXCEPTION_LIST = ["MLDT", "GALE", "MGLE", "SBG"];
 
-  // ================= EXCEPTION RULE (HIGHEST PRIORITY) =================
-  // CTO/DEP = AZ AND (MOC OR OFF in MLDT/GALE/MGLE/SBG) → PRDG
+  // ===== EXCEPTION RULE =====
   if (
     ctoStn === "AZ" &&
     (AZ_EXCEPTION_LIST.includes(mocStn) ||
@@ -639,20 +640,33 @@ function mapINTByRules(out){
     return "PRDG";
   }
 
-  // ================= NORMAL RULES =================
+  // ===== NORMAL RULES =====
   for (let s of stations) {
-    if (["MGLE", "GALE"].includes(s)) return "GSGB";
-    if (s === "ADL") return "BTNG";
-    if (["TDLE", "SBG", "CLG"].includes(s)) return "GMAN";
-    if (["UDL", "PAW"].includes(s)) return "SNT";
-    if (["DUMK", "BGP"].includes(s)) return "DUMK";
 
-    if (s === "MLDT") {
+    if (["MGLE","GALE"].includes(s)) return "GSGB";
+    if (s==="ADL") return "BTNG";
+    if (["TDLE","SBG","CLG"].includes(s)) return "GMAN";
+    if (["UDL","PAW"].includes(s)) return "SNT";
+    if (["DUMK","BGP"].includes(s)) return "DUMK";
+
+    if (s==="MLDT"){
       return train.includes("GSGB") ? "GSGB" : "GMAN";
     }
   }
 
   return "";
+}
+/* ===== ULTRA SAFE VALUE HANDLER ===== */
+function S(v){
+  if(v === null || v === undefined) return "";
+  return String(v).trim().toUpperCase();
+}
+
+function T(v){
+  if(!v) return "";
+  const s = String(v);
+  const m = s.match(/(\d{1,2}):(\d{1,2})/);
+  return m ? m[1].padStart(2,"0")+":"+m[2].padStart(2,"0") : "";
 }
 
 /* ===================== SUBMIT ===================== */
@@ -1167,42 +1181,6 @@ function detectWorkingSection(on,moc,off){
   return "";
 }
 
-// CLOSE MODAL FUNCTION
-/*function closeExtraColumnModal(){
-
-    const modal = document.getElementById("extraColumnModal");
-    if(!modal) return; // <-- prevents crash
-
-    modal.classList.remove("show");
-    modal.style.display = "none";
-    document.body.classList.remove("modal-open");
-
-    document.querySelectorAll(".modal-backdrop")
-        .forEach(el => el.remove());
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-
-    const closeBtn = document.getElementById("extraColumnModalClose");
-    const modal = document.getElementById("extraColumnModal");
-    const downloadBtn = document.getElementById("downloadSelectedColumns");
-
-    if(closeBtn)
-        closeBtn.addEventListener("click", closeExtraColumnModal);
-
-    if(downloadBtn)
-        downloadBtn.addEventListener("click", closeExtraColumnModal);
-
-    if(modal)
-        modal.addEventListener("click", function(e){
-            if(e.target === modal) closeExtraColumnModal();
-        });
-
-    document.addEventListener("keydown", function(e){
-        if(e.key === "Escape") closeExtraColumnModal();
-    });
-
-});*/
 
 </script>
 
