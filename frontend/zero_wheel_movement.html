@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CMS Zero Wheel Movement Analyzer</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- DataTables -->
+<link rel="stylesheet"
+href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<link rel="stylesheet"
+href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css">
+
+<link rel="stylesheet"
+href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.min.css">
+
+<style>
+
+body{
+    background:#f5f7fb;
+}
+
+.page-title{
+    font-size:28px;
+    font-weight:700;
+}
+
+.card-summary{
+    border:none;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.summary-number{
+    font-size:28px;
+    font-weight:700;
+    color:#0d6efd;
+}
+
+.section-card{
+    border:none;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.dt-container{
+    width:100%;
+    overflow-x:auto;
+}
+
+table.dataTable{
+    white-space:nowrap;
+}
+
+#loadingBox{
+    display:none;
+}
+
+.footer-note{
+    font-size:12px;
+    color:#666;
+}
+
+.summary-bar{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:999;
+
+    display:flex;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+    background:#ffffff;
+
+    padding:10px;
+
+    border-radius:10px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+}
+
+.summary-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:6px 14px;
+
+    border-radius:8px;
+
+    background:#f8f9fa;
+
+}
+
+.summary-label{
+
+    font-size:13px;
+
+    color:#666;
+
+    font-weight:600;
+
+}
+
+.summary-value{
+
+    font-size:18px;
+
+    font-weight:700;
+
+    color:#0d6efd;
+
+}
+.table-responsive{
+
+    max-height:75vh;
+
+    overflow:auto;
+
+}
+
+.summary-bar{
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+
+    position:sticky;
+    top:0;
+
+    z-index:1000;
+
+    margin-bottom:15px;
+}
+
+.kpi-card{
+
+    width:200px;
+    height:75px;
+
+    background:#ffffff;
+
+    border-radius:12px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    border:1px solid #e5e7eb;
+
+    box-shadow:
+        0 2px 4px rgba(0,0,0,.04),
+        0 8px 16px rgba(0,0,0,.06);
+
+    transition:all .2s ease;
+}
+
+.kpi-card:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.08),
+        0 12px 24px rgba(0,0,0,.12);
+}
+
+.kpi-title{
+
+    font-size:14px;
+
+    font-weight:750;
+
+    color:#6b7280;
+
+    letter-spacing:.8px;
+
+    text-transform:uppercase;
+
+    text-align:center;
+}
+
+.kpi-value{
+
+    margin-top:2px;
+
+    font-size:30px;
+
+    font-weight:700;
+
+    color:#111827;
+
+    line-height:1;
+}
+.filter-row input{
+
+    width:100%;
+
+    min-width:70px;
+
+    font-size:12px;
+
+    padding:3px 5px;
+
+    border:1px solid #ced4da;
+
+    border-radius:4px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container-fluid py-4">
+
+    <!-- SUMMARY -->
+
+    <div class="summary-bar mb-3">
+
+        <div class="kpi-card bg-primary">
+            <div class="kpi-title text-white">TOTAL ROWS</div>
+            <div class="kpi-value" id="totalRows">0</div>
+        </div>
+
+        <div class="kpi-card bg-success">
+            <div class="kpi-title text-white">NO. OF DUTY</div>
+            <div class="kpi-value" id="totalGroups">0</div>
+        </div>
+
+        <div class="kpi-card bg-dark">
+            <div class="kpi-title text-white">ZERO WHEEL MOVEMENT</div>
+            <div class="kpi-value text-success" id="includedGroups">0</div>
+        </div>
+
+        <div class="kpi-card bg-warning">
+            <div class="kpi-title text-white">EXCLUDED</div>
+            <div class="kpi-value text-danger" id="excludedGroups">0</div>
+        </div>
+
+        <div class="kpi-card bg-secondary">
+            <div class="kpi-title text-white">RETURNED ROWS</div>
+            <div class="kpi-value text-warning" id="returnedRows">0</div>
+        </div>
+
+        <div class="kpi-card bg-info">
+            <div class="kpi-title text-white">STATUS</div>
+            <div class="kpi-value text-primary" id="fileStatus">
+                Ready
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card section-card mb-4">
+        <div class="card-body">
+
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <input
+                        type="file"
+                        id="excelFile"
+                        class="form-control"
+                        accept=".xlsx,.xls"
+                    >
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <button
+                        class="btn btn-primary"
+                        id="btnAnalyze"
+                    >
+                        <i class="bi bi-search"></i>
+                        Analyze Report
+                    </button>
+
+                    <button
+                        class="btn btn-secondary"
+                        id="btnClear"
+                    >
+                        Clear
+                    </button>
+
+                </div>
+
+                <div class="col-md-3">
+                    <button
+                        class="btn btn-success"
+                        id="btnExport"
+                        disabled
+                    >
+                        <i class="bi bi-file-earmark-excel"></i>
+                        Export as Excel
+                    </button>
+                    <button
+                        class="btn btn-warning"
+                        id="btnExportPdf"
+                        disabled
+                    >
+                        <i class="bi bi-file-earmark-excel"></i>
+                        Export as Pdf
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- LOADING -->
+
+    <div class="alert alert-info" id="loadingBox">
+        Processing Report...
+    </div>
+
+    <!-- RESULT TABLE -->
+
+    <div class="card section-card">
+
+        <div class="card-header">
+
+            <strong>
+                Resultant Zero Wheel Movement Duties
+            </strong>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table
+                    id="resultTable"
+                    class="display table table-bordered table-striped w-100"
+                >
+
+                    <thead>
+
+                        <tr>
+
+                            <th>S.No.</th>
+                            <th>CREW ID</th>
+                            <th>NAME</th>
+                            <th>DESIG</th>
+                            <th>TOTAL DUTY</th>
+                            <th>SIGNON DATE</th>
+                            <th>SIGNON STTN</th>
+                            <th>DEPARTURE</th>
+                            <th>PDD</th>
+                            <th>ARRIVAL</th>
+                            <th>SIGNOFF DATE</th>
+                            <th>SIGNOFF STTN</th>
+                            <th>DUTY HRS</th>
+                            <th>DUTY TYPE</th>
+                            <th>TRAIN NO</th>
+                            <th>LOCO NO</th>
+                            <th>WHEEL MOVEMENT</th>
+                            <th>AVG SPEED</th>
+                            <th>ROUTE KM</th>
+                            <th>TOTAL KM</th>
+                            <th>M/K</th>
+                            <th>CTO</th>
+                            <th>CMO</th>
+                            <th>SECTION</th>
+                            <th>ROUTE NAME</th>
+
+                        </tr>
+                        <tr class="filter-row">
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="mt-3 footer-note">
+        Developed for CMS Zero Wheel Movement Analysis.
+    </div>
+
+</div>
+
+<!-- JQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+
+<!-- SheetJS -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<script>
+
+/* ===========================
+   GLOBAL VARIABLES
+=========================== */
+
+let originalData = [];
+let filteredData = [];
+
+/* ===========================
+   RULE CONFIG
+=========================== */
+
+const EXCLUDED_DUTY_TYPES = [
+
+    "WR",
+    "LR",
+    "SH",
+    "BNKD",
+    "DEAD",
+    "COCH",
+    "DEPT",
+    "BD",
+    "GHAT",
+    "MINIMUM GURANTEED",
+    "CP"
+
+];
+
+let resultTable = null;
+
+/* ===========================
+   INIT DATATABLE
+=========================== */
+
+$(document).ready(function(){
+
+    $('#resultTable thead tr.filter-row th').each(function(){
+
+        $(this).html(
+            '<input type="text" placeholder="🔍" />'
+        );
+
+    });
+
+    resultTable = new DataTable('#resultTable',{
+
+        pageLength:50,
+
+        scrollX:true,
+
+        scrollY:"65vh",
+
+        fixedHeader:true,
+
+        order:[[0,'asc']]
+
+    });
+
+    resultTable.columns().every(function(index){
+
+        const column = this;
+
+        $('input', $('.filter-row th')[index])
+
+        .on('keyup change', function(){
+
+            if(column.search() !== this.value){
+
+                column
+                    .search(this.value)
+                    .draw();
+
+            }
+
+        });
+
+    });
+
+});
+
+/* ===========================
+   EXCEL READER
+=========================== */
+
+function findHeaderRow(sheetData){
+
+    for(let i=0;i<sheetData.length;i++){
+
+        const row = sheetData[i];
+
+        if(!row) continue;
+
+        const values = row.map(x =>
+            String(x || "")
+            .trim()
+            .toUpperCase()
+        );
+
+        if(
+            values.includes("S.NO.") &&
+            values.includes("CREW ID")
+        ){
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+function readExcelFile(file){
+
+    return new Promise((resolve,reject)=>{
+
+        const reader = new FileReader();
+
+        reader.onload = function(e){
+
+            try{
+
+                const data = new Uint8Array(e.target.result);
+
+                const workbook = XLSX.read(data,{
+                    type:'array'
+                });
+
+                const firstSheet =
+                    workbook.Sheets[
+                        workbook.SheetNames[0]
+                    ];
+
+                const rawData =
+                    XLSX.utils.sheet_to_json(
+                        firstSheet,
+                        {
+                            header:1,
+                            defval:""
+                        }
+                    );
+
+                const headerIndex =
+                    findHeaderRow(rawData);
+
+                if(headerIndex === -1){
+
+                    reject(
+                        "Header row not found."
+                    );
+
+                    return;
+                }
+
+                const headers =
+                    rawData[headerIndex];
+
+                const rows =
+                    rawData.slice(headerIndex + 1);
+
+                const jsonData =
+                    rows.map(row=>{
+
+                        let obj = {};
+
+                        headers.forEach(
+                            (header,index)=>{
+
+                            obj[
+                                String(header).trim()
+                            ] =
+                                row[index] || "";
+
+                        });
+
+                        return obj;
+
+                    });
+
+                resolve(jsonData);
+
+            }
+            catch(err){
+
+                reject(err);
+
+            }
+
+        };
+
+        reader.readAsArrayBuffer(file);
+
+    });
+
+}
+
+$("#btnAnalyze").on("click",async function(){
+
+    const file =
+        $("#excelFile")[0].files[0];
+
+    if(!file){
+
+        alert(
+            "Please select an Excel file."
+        );
+
+        return;
+    }
+
+    try{
+
+        $("#loadingBox").show();
+
+        $("#fileStatus")
+            .text("Reading");
+
+        originalData =
+            await readExcelFile(file);
+
+        const dutyGroups =
+            new Set();
+
+        originalData.forEach(row=>{
+
+            const sno =
+                String(
+                    row["S.No."] ||
+                    row["S.NO."] ||
+                    ""
+                ).trim();
+
+            if(sno){
+
+                dutyGroups.add(sno);
+
+            }
+
+        });
+
+        $("#totalRows")
+            .text(originalData.length);
+
+        $("#totalGroups")
+            .text(dutyGroups.size);
+
+        $("#fileStatus")
+            .text("Loaded");
+
+        $("#loadingBox").hide();
+
+        alert(
+            `Excel Loaded Successfully\n\nRows : ${originalData.length}\nGroups : ${dutyGroups.size}`
+        );
+
+        analyzeDutyGroups();
+        loadResultTable();
+
+        console.log(originalData);
+
+    }
+    catch(error){
+
+        $("#loadingBox").hide();
+
+        $("#fileStatus")
+            .text("Error");
+
+        console.error(error);
+
+        alert(
+            "Error reading Excel.\n\n" +
+            error
+        );
+
+    }
+
+});
+
+/* ===========================
+   GROUP BY S.NO
+=========================== */
+
+function groupBySNo(data){
+
+    const groups = {};
+
+    data.forEach(row=>{
+
+        const sno =
+            String(
+                row["S.No."] ||
+                row["S.NO."] ||
+                ""
+            ).trim();
+
+        if(!sno) return;
+
+        if(!groups[sno]){
+
+            groups[sno] = [];
+
+        }
+
+        groups[sno].push(row);
+
+    });
+
+    return groups;
+
+}
+
+/* ===========================
+   DUTY TYPE EXTRACTOR
+=========================== */
+
+function getDutyTypes(group){
+
+    return group.map(row=>{
+
+        return String(
+            row["DUTY TYPE"] || ""
+        )
+        .trim()
+        .toUpperCase();
+
+    });
+
+}
+
+/* ===========================
+   VALIDATE DUTY GROUP
+=========================== */
+
+function isValidDutyGroup(group){
+
+    const dutyTypes =
+        getDutyTypes(group);
+
+    const hasYR =
+        dutyTypes.includes("YR");
+
+    const hasWT =
+        dutyTypes.includes("WT");
+
+    const hasRequired =
+        hasYR || hasWT;
+
+    const hasExcluded =
+        dutyTypes.some(type =>
+            EXCLUDED_DUTY_TYPES.includes(type)
+        );
+
+    return (
+        hasRequired &&
+        !hasExcluded
+    );
+
+}
+
+/* ===========================
+   GROUP COUNTER
+=========================== */
+
+function getUniqueGroups(data){
+
+    const groups =
+        new Set();
+
+    data.forEach(row=>{
+
+        const sno =
+            String(
+                row["S.No."] ||
+                row["S.NO."] ||
+                ""
+            ).trim();
+
+        if(sno){
+
+            groups.add(sno);
+
+        }
+
+    });
+
+    return groups.size;
+
+}
+
+/* ===========================
+   MAIN ANALYZER
+=========================== */
+
+function analyzeDutyGroups(){
+
+    filteredData = [];
+
+    const groupedData =
+        groupBySNo(originalData);
+
+    const groups =
+        Object.values(groupedData);
+
+    groups.sort((a,b)=>{
+
+        const dateA =
+            new Date(a[0]["SIGNON DATE"]);
+
+        const dateB =
+            new Date(b[0]["SIGNON DATE"]);
+
+        return dateA - dateB;
+
+    });
+
+    let includedCount = 0;
+    let excludedCount = 0;
+
+    let newSno = 1;
+
+    groups.forEach(group=>{
+
+        const valid =
+            isValidDutyGroup(group);
+
+        if(valid){
+
+            includedCount++;
+
+            group.forEach(row=>{
+
+                row["NEW_SNO"] = newSno;
+
+                filteredData.push(row);
+
+            });
+
+            newSno++;
+
+        }
+        else{
+
+            excludedCount++;
+
+        }
+
+    });
+
+    $("#includedGroups").text(includedCount);
+    $("#excludedGroups").text(excludedCount);
+    $("#returnedRows").text(filteredData.length);
+
+    $("#btnExport").prop("disabled", false);
+    $("#btnExportPdf").prop("disabled", false);
+
+}
+
+/* ===========================
+   LOAD RESULT TABLE
+=========================== */
+
+function loadResultTable(){
+
+    resultTable.clear();
+
+    filteredData.forEach(row=>{
+
+        resultTable.row.add([
+
+            row["NEW_SNO"] || "",
+            row["CREW ID"] || "",
+            row["NAME"] || "",
+            row["DESIG"] || "",
+            row["TOTAL DUTY"] || "",
+            row["SIGNON DATE"] || "",
+            row["SIGNON STTN"] || "",
+            row["DEPARTURE"] || "",
+            row["PDD"] || "",
+            row["ARRIVAL"] || "",
+            row["SIGNOFF DATE"] || "",
+            row["SIGNOFF STTN"] || "",
+            row["DUTY HRS"] || "",
+            row["DUTY TYPE"] || "",
+            row["TRAIN NO"] || "",
+            row["LOCO NO"] || "",
+            row["WHEEL MOVEMENT"] || "",
+            row["AVG. SPEED (KM/Hrs)"] || "",
+            row["Route KM"] || "",
+            row["TOTAL KM"] || "",
+            row["M/K"] || "",
+            row["CTO"] || "",
+            row["CMO"] || "",
+            row["Section"] || "",
+            row["Route Name"] || "",
+
+        ]);
+
+    });
+
+    resultTable.draw();
+
+}
+
+/* ===========================
+   EXPORT TO EXCEL
+=========================== */
+
+function exportToExcel(){
+
+    if(filteredData.length === 0){
+
+        alert("No data available for export.");
+
+        return;
+    }
+
+    try{
+
+        const exportData =
+            filteredData.map(row=>({
+
+                "S.No.": row["NEW_SNO"] || "",
+                "CREW ID": row["CREW ID"] || "",
+                "NAME": row["NAME"] || "",
+                "DESIG": row["DESIG"] || "",
+                "TOTAL DUTY": row["TOTAL DUTY"] || "",
+                "SIGNON DATE": row["SIGNON DATE"] || "",
+                "SIGNON STTN": row["SIGNON STTN"] || "",
+                "DEPARTURE": row["DEPARTURE"] || "",
+                "PDD": row["PDD"] || "",
+                "ARRIVAL": row["ARRIVAL"] || "",
+                "SIGNOFF DATE": row["SIGNOFF DATE"] || "",
+                "SIGNOFF STTN": row["SIGNOFF STTN"] || "",
+                "DUTY HRS": row["DUTY HRS"] || "",
+                "DUTY TYPE": row["DUTY TYPE"] || "",
+                "TRAIN NO": row["TRAIN NO"] || "",
+                "LOCO NO": row["LOCO NO"] || "",
+                "WHEEL MOVEMENT": row["WHEEL MOVEMENT"] || "",
+                "AVG SPEED": row["AVG. SPEED (KM/Hrs)"] || "",
+                "ROUTE KM": row["Route KM"] || "",
+                "TOTAL KM": row["TOTAL KM"] || "",
+                "M/K": row["M/K"] || "",
+                "CTO": row["CTO"] || "",
+                "CMO": row["CMO"] || "",
+                "SECTION": row["Section"] || "",
+                "ROUTE NAME": row["Route Name"] || ""
+
+            }));
+
+        const wb = XLSX.utils.book_new();
+
+        const heading =
+            `CMS ZERO WHEEL MOVEMENT REPORT | Generated: ${new Date().toLocaleString()} | Duty: ${$("#totalGroups").text()} | Zero WM: ${$("#includedGroups").text()} | Returned: ${$("#returnedRows").text()}`;
+
+        const ws =
+            XLSX.utils.aoa_to_sheet([
+                [heading]
+            ]);
+
+        XLSX.utils.sheet_add_json(
+            ws,
+            exportData,
+            {
+                origin: "A3"
+            }
+        );
+
+        ws["!merges"] = [{
+            s:{r:0,c:0},
+            e:{r:0,c:25}
+        }];
+
+        ws["!cols"] = [
+
+            {wch:8},
+            {wch:12},
+            {wch:30},
+            {wch:15},
+            {wch:12},
+            {wch:18},
+            {wch:15},
+            {wch:15},
+            {wch:12},
+            {wch:15},
+            {wch:18},
+            {wch:15},
+            {wch:12},
+            {wch:12},
+            {wch:12},
+            {wch:12},
+            {wch:18},
+            {wch:12},
+            {wch:10},
+            {wch:10},
+            {wch:8},
+            {wch:12},
+            {wch:12},
+            {wch:20},
+            {wch:30}
+
+        ];
+
+        XLSX.utils.book_append_sheet(
+            wb,
+            ws,
+            "Zero Wheel Movement"
+        );
+
+        const today = new Date();
+
+        const fileName =
+            "Zero_Wheel_Movement_" +
+            today.getFullYear() +
+            "-" +
+            String(today.getMonth()+1).padStart(2,"0") +
+            "-" +
+            String(today.getDate()).padStart(2,"0") +
+            ".xlsx";
+
+        XLSX.writeFile(
+            wb,
+            fileName
+        );
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        alert("Export failed.");
+
+    }
+
+}
+
+/* ===========================
+   EXPORT PDF
+=========================== */
+
+function exportToPdf(){
+
+    if(filteredData.length === 0){
+
+        alert("No data available.");
+
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF(
+        'landscape',
+        'mm',
+        'a4'
+    );
+
+    const heading =
+        `CMS ZERO WHEEL MOVEMENT REPORT | Generated: ${new Date().toLocaleString()} | Duty: ${$("#totalGroups").text()} | Zero WM: ${$("#includedGroups").text()} | Returned: ${$("#returnedRows").text()}`;
+
+    doc.setFontSize(8);
+
+    doc.setFont(
+        undefined,
+        "bold"
+    );
+
+    doc.text(
+        heading,
+        8,
+        8
+    );
+
+    const tableData = [];
+
+    filteredData.forEach(row=>{
+
+        tableData.push([
+
+            row["NEW_SNO"] || "",
+            row["CREW ID"] || "",
+            row["NAME"] || "",
+            row["DESIG"] || "",
+            row["TOTAL DUTY"] || "",
+            row["SIGNON DATE"] || "",
+            row["SIGNON STTN"] || "",
+            row["DEPARTURE"] || "",
+            row["PDD"] || "",
+            row["ARRIVAL"] || "",
+            row["SIGNOFF DATE"] || "",
+            row["SIGNOFF STTN"] || "",
+            row["DUTY HRS"] || "",
+            row["DUTY TYPE"] || "",
+            row["TRAIN NO"] || "",
+            row["LOCO NO"] || "",
+            row["WHEEL MOVEMENT"] || "",
+            row["AVG. SPEED (KM/Hrs)"] || "",
+            row["Route KM"] || "",
+            row["TOTAL KM"] || "",
+            row["M/K"] || "",
+            row["CTO"] || "",
+            row["CMO"] || "",
+            row["Section"] || "",
+            row["Route Name"] || ""
+
+        ]);
+
+    });
+
+    doc.autoTable({
+
+        startY:12,
+
+        head:[[
+            "S.No",
+            "Crew ID",
+            "Name",
+            "Desig",
+            "Total Duty",
+            "SignOn Date",
+            "SignOn Stn",
+            "Departure",
+            "PDD",
+            "Arrival",
+            "SignOff Date",
+            "SignOff Stn",
+            "Duty Hrs",
+            "Duty Type",
+            "Train No",
+            "Loco No",
+            "Wheel Mov",
+            "Avg Speed",
+            "Route KM",
+            "Total KM",
+            "M/K",
+            "CTO",
+            "CMO",
+            "Section",
+            "Route Name"
+        ]],
+
+        body: tableData,
+
+        theme: "grid",
+
+        styles:{
+            fontSize:4,
+            cellPadding:0.5,
+            overflow:'linebreak',
+            valign:'middle'
+        },
+
+        headStyles:{
+            fillColor:[52,73,94],
+            textColor:[255,255,255],
+            fontSize:4,
+            halign:'center'
+        },
+
+        bodyStyles:{
+            fontSize:4
+        },
+
+        alternateRowStyles:{
+            fillColor:[245,245,245]
+        },
+
+        tableWidth:'auto',
+
+        rowPageBreak:'auto',
+
+        showHead:'everyPage',
+
+        margin:{
+            top:12,
+            left:2,
+            right:2
+        }
+
+    });
+
+    const today = new Date();
+
+    const fileName =
+        "Zero_Wheel_Movement_" +
+        today.getFullYear() +
+        "-" +
+        String(
+            today.getMonth()+1
+        ).padStart(2,"0") +
+        "-" +
+        String(
+            today.getDate()
+        ).padStart(2,"0") +
+        ".pdf";
+
+    doc.save(fileName);
+
+}
+
+/* ===========================
+   BUTTON PLACEHOLDERS
+=========================== */
+
+$("#btnExport").on("click",function(){
+
+    exportToExcel();
+
+});
+
+$("#btnExportPdf").on("click",function(){
+
+    exportToPdf();
+
+});
+
+$("#btnClear").on("click",function(){
+
+    location.reload();
+
+});
+
+</script>
+
+</body>
+</html>
