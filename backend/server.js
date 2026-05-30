@@ -59,6 +59,9 @@ app.get("/speed", (req, res) => {
 app.get("/long_hrs", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "long_hours.html"));
 });
+app.get("/zero_whm", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend", "zero_wheel_movement.html"));
+});
 // =======================
 // Progress API
 // =======================
