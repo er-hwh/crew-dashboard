@@ -46,181 +46,251 @@ body{
 }
 
 /* ===========================
-KPI SECTION
+   HEADER
 =========================== */
 
-.summary-bar{
-    position:sticky;
-    top:0;
-    z-index:1050;
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-    margin-bottom:15px;
+.stats-line{
+
+    font-size:14px;
+
+    font-weight:600;
+
+    color:#4b5563;
+
+    line-height:1.8;
 }
 
-.kpi-card{
-    width:190px;
-    height:80px;
-    border:none;
-    border-radius:12px;
+.stats-line span{
+
+    color:#0d6efd;
+
+    font-weight:700;
+
+    margin-right:6px;
+}
+
+/* ===========================
+   TOOLBAR
+=========================== */
+
+.toolbar{
+
     display:flex;
-    flex-direction:column;
-    justify-content:center;
+
+    justify-content:space-between;
+
     align-items:center;
-    color:#fff;
-    box-shadow:
-        0 3px 8px rgba(0,0,0,.10);
-    transition:.25s;
+
+    gap:15px;
+
+    flex-wrap:wrap;
 }
 
-.kpi-card:hover{
-    transform:translateY(-3px);
+.toolbar-left,
+.toolbar-center,
+.toolbar-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    flex-wrap:wrap;
 }
 
-.kpi-title{
-    font-size:12px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.6px;
-    text-align:center;
+.toolbar-left input{
+
+    width:320px;
 }
 
-.kpi-value{
-    font-size:28px;
-    font-weight:700;
-    line-height:1.1;
+.toolbar-right .btn{
+
+    min-width:110px;
 }
 
 /* ===========================
-NAV TABS
+   TABS
 =========================== */
 
-.nav-tabs{
-    border-bottom:none;
+.nav-pills{
+
+    gap:6px;
 }
 
-.nav-tabs .nav-link{
+.nav-pills .nav-link{
+
+    border-radius:8px;
+
     font-weight:600;
+
     color:#495057;
-    border:none;
-    border-radius:10px 10px 0 0;
-    padding:10px 18px;
-    margin-right:4px;
+
+    border:1px solid #dee2e6;
+
+    background:#fff;
 }
 
-.nav-tabs .nav-link.active{
+.nav-pills .nav-link.active{
+
     background:#0d6efd;
+
+    border-color:#0d6efd;
+
     color:#fff;
 }
 
 /* ===========================
-RUNNING KM PANEL
+   RUNNING KM FILTER
 =========================== */
 
-#runningKmTab .card{
-    border:none;
-    border-radius:12px;
-    box-shadow:
-        0 2px 10px rgba(0,0,0,.08);
+#runningKmFilterPanel{
+
+    border-left:4px solid #0d6efd;
 }
 
-#runningKmTab label{
-    font-size:13px;
-    font-weight:600;
-    color:#555;
+#runningKmFilterPanel .card-body{
+
+    padding:12px 18px;
 }
 
 /* ===========================
-TABLE
+   TABLE
 =========================== */
 
 .table-responsive{
+
     max-height:75vh;
+
     overflow:auto;
 }
 
 table.dataTable{
+
     white-space:nowrap;
+
     font-size:13px;
 }
 
 table.dataTable thead th{
+
     background:#212529;
+
     color:#fff;
+
     font-size:12px;
+
     position:sticky;
+
     top:0;
+
     z-index:10;
 }
 
 /* ===========================
-COLUMN FILTERS
+   COLUMN FILTER
 =========================== */
 
 .filter-row th{
+
     padding:2px !important;
+
     background:#f8f9fa !important;
 }
 
 .filter-row input{
+
     width:100%;
+
     min-width:40px;
+
     max-width:100%;
+
     height:24px;
+
     font-size:11px;
+
     padding:2px 4px;
+
     border:1px solid #ced4da;
+
     border-radius:4px;
+
     box-sizing:border-box;
 }
 
 .filter-row input:focus{
+
     outline:none;
+
     border-color:#0d6efd;
+
     box-shadow:
         0 0 0 2px rgba(13,110,253,.15);
 }
 
 /* ===========================
-BUTTONS
+   BUTTONS
 =========================== */
 
 .btn{
+
     border-radius:8px;
 }
 
-#btnExport,
-#btnExportPdf{
-    min-width:130px;
-}
-
 /* ===========================
-DATATABLE
+   DATATABLE
 =========================== */
 
 .dataTables_wrapper .dataTables_filter{
+
     margin-bottom:10px;
 }
 
 .dataTables_wrapper .dataTables_length{
+
     margin-bottom:10px;
 }
 
 /* ===========================
-MOBILE
+   MOBILE
 =========================== */
 
+@media(max-width:992px){
+
+    .toolbar{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+    }
+
+    .toolbar-left input{
+
+        width:100%;
+    }
+
+    .stats-line{
+
+        margin-top:10px;
+    }
+
+}
+
 @media(max-width:768px){
-    .kpi-card{
 
-        width:calc(50% - 6px);
+    .stats-line{
+
+        font-size:12px;
     }
 
-    .kpi-value{
+    .toolbar-left,
+    .toolbar-center,
+    .toolbar-right{
 
-        font-size:22px;
+        width:100%;
     }
+
 }
 
 </style>
@@ -229,244 +299,140 @@ MOBILE
 
 <body>
 
-<div class="container-fluid py-4">
+<div class="container-fluid py-3">
 
-<!-- KPI SUMMARY -->
+    <!-- HEADER + TOOLBAR -->
 
-<div class="summary-bar mb-3">
+    <div class="card section-card mb-3">
 
-    <div class="kpi-card bg-primary">
-        <div class="kpi-title text-white">TOTAL ROWS</div>
-        <div class="kpi-value" id="totalRows">0</div>
-    </div>
+        <div class="card-body">
 
-    <div class="kpi-card bg-success">
-        <div class="kpi-title text-white">NO. OF DUTY</div>
-        <div class="kpi-value" id="totalGroups">0</div>
-    </div>
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
 
-    <div class="kpi-card bg-dark">
-        <div class="kpi-title text-white">MATCHED GROUPS</div>
-        <div class="kpi-value text-success" id="includedGroups">0</div>
-    </div>
+                <div>
 
-    <div class="kpi-card bg-warning">
-        <div class="kpi-title text-white">EXCLUDED</div>
-        <div class="kpi-value text-danger" id="excludedGroups">0</div>
-    </div>
+                    <h3 class="mb-1 text-primary">
 
-    <div class="kpi-card bg-secondary">
-        <div class="kpi-title text-white">RETURNED ROWS</div>
-        <div class="kpi-value text-warning" id="returnedRows">0</div>
-    </div>
+                        Zero Wheel Movement & Running KM Analysis Tool
 
-    <div class="kpi-card bg-info">
-        <div class="kpi-title text-white">STATUS</div>
-        <div class="kpi-value text-primary" id="fileStatus">
-            Ready
-        </div>
-    </div>
+                    </h3>
 
-</div>
+                </div>
 
-<!-- FILE SECTION -->
+                <div class="stats-line">
 
-<div class="card section-card mb-3">
+                    Rows:
+                    <span id="totalRows">0</span>
 
-    <div class="card-body">
+                    |
 
-        <div class="row g-3 align-items-end">
+                    Duty:
+                    <span id="totalGroups">0</span>
 
-            <div class="col-md-3">
+                    |
 
-                <label class="form-label">
-                    CMS Excel File
-                </label>
+                    Matched:
+                    <span id="includedGroups">0</span>
+                    |
 
-                <input
-                    type="file"
-                    id="excelFile"
-                    class="form-control"
-                    accept=".xlsx,.xls">
+                    Excluded:
+                    <span id="excludedGroups">0</span>
+
+                    |
+
+                    Returned:
+                    <span id="returnedRows">0</span>
+
+                </div>
 
             </div>
 
-            <div class="col-md-3">
+            <hr>
 
-                <button
-                    class="btn btn-primary"
-                    id="btnAnalyze">
+            <div class="toolbar">
 
-                    <i class="bi bi-search"></i>
-                    Analyze Report
+                <div class="toolbar-left">
 
-                </button>
+                    <input
+                        type="file"
+                        id="excelFile"
+                        class="form-control"
+                        accept=".xlsx,.xls">
 
-                <button
-                    class="btn btn-secondary"
-                    id="btnClear">
+                    <button
+                        class="btn btn-primary"
+                        id="btnAnalyze">
 
-                    Clear
+                        <i class="bi bi-search"></i>
+                        Analyze
 
-                </button>
+                    </button>
 
-            </div>
+                    <button
+                        class="btn btn-secondary"
+                        id="btnClear">
 
-            <div class="col-md-3">
+                        Clear
 
-                <button
-                    class="btn btn-success"
-                    id="btnExport"
-                    disabled>
+                    </button>
 
-                    <i class="bi bi-file-earmark-excel"></i>
-                    Export Excel
+                </div>
 
-                </button>
+                <div class="toolbar-center">
 
-                <button
-                    class="btn btn-warning"
-                    id="btnExportPdf"
-                    disabled>
+                    <ul
+                        class="nav nav-pills"
+                        id="analysisTabs">
 
-                    <i class="bi bi-file-earmark-pdf"></i>
-                    Export PDF
+                        <li class="nav-item">
 
-                </button>
+                            <button
+                                class="nav-link active"
+                                id="zeroWheelTabBtn">
 
-            </div>
+                                Zero Wheel Movement
 
-        </div>
+                            </button>
 
-    </div>
+                        </li>
 
-</div>
+                        <li class="nav-item">
 
-<!-- LOADING -->
+                            <button
+                                class="nav-link"
+                                id="runningKmTabBtn">
 
-<div
-    class="alert alert-info"
-    id="loadingBox">
+                                Running KM Analyzer
 
-    Processing Report...
+                            </button>
 
-</div>
+                        </li>
 
-<!-- ANALYZER TABS -->
+                    </ul>
 
-<div class="card section-card mb-3">
+                </div>
 
-    <div class="card-body p-2">
+                <div class="toolbar-right">
 
-        <ul
-            class="nav nav-tabs"
-            id="analysisTabs">
+                    <button
+                        class="btn btn-success"
+                        id="btnExport"
+                        disabled>
 
-            <li class="nav-item">
+                        <i class="bi bi-file-earmark-excel"></i>
+                        Excel
 
-                <button
-                    class="nav-link active"
-                    id="zeroWheelTabBtn"
-                    data-bs-toggle="tab"
-                    data-bs-target="#zeroWheelTab">
+                    </button>
 
-                    Zero Wheel Movement
+                    <button
+                        class="btn btn-warning"
+                        id="btnExportPdf"
+                        disabled>
 
-                </button>
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        PDF
 
-            </li>
-
-            <li class="nav-item">
-
-                <button
-                    class="nav-link"
-                    id="runningKmTabBtn"
-                    data-bs-toggle="tab"
-                    data-bs-target="#runningKmTab">
-
-                    Running KM Analyzer
-
-                </button>
-
-            </li>
-
-        </ul>
-
-    </div>
-
-</div>
-
-<!-- TAB CONTENT -->
-
-<div class="tab-content mb-3">
-
-    <div
-        class="tab-pane fade show active"
-        id="zeroWheelTab">
-
-    </div>
-
-    <div
-        class="tab-pane fade"
-        id="runningKmTab">
-
-        <div class="card section-card">
-
-            <div class="card-body">
-
-                <div class="row g-3">
-
-                    <div class="col-md-2">
-
-                        <label>
-                            Running KM From
-                        </label>
-
-                        <input
-                            type="number"
-                            id="kmFrom"
-                            class="form-control"
-                            value="1">
-
-                    </div>
-
-                    <div class="col-md-2">
-
-                        <label>
-                            Running KM To
-                        </label>
-
-                        <input
-                            type="number"
-                            id="kmTo"
-                            class="form-control"
-                            value="500">
-
-                    </div>
-
-                    <div class="col-md-2">
-
-                        <button
-                            class="btn btn-primary mt-4"
-                            id="btnApplyKmFilter">
-
-                            Apply Filter
-
-                        </button>
-
-                    </div>
-
-                    <div class="col-md-2">
-
-                        <button
-                            class="btn btn-secondary mt-4"
-                            id="btnResetKmFilter">
-
-                            Reset
-
-                        </button>
-
-                    </div>
+                    </button>
 
                 </div>
 
@@ -476,85 +442,178 @@ MOBILE
 
     </div>
 
-</div>
+    <!-- LOADING -->
 
-<!-- RESULT TABLE -->
+    <div
+        class="alert alert-info"
+        id="loadingBox">
 
-<div class="card section-card">
-
-    <div class="card-header">
-
-        <strong id="resultTitle">
-
-            Resultant Duties
-
-        </strong>
+        Processing Report...
 
     </div>
 
-    <div class="card-body">
+    <!-- RUNNING KM FILTER -->
 
-        <div class="table-responsive">
+    <div
+        id="runningKmFilterPanel"
+        class="card section-card mb-3"
+        style="display:none;">
 
-            <table
-                id="resultTable"
-                class="display table table-bordered table-striped w-100">
+        <div class="card-body">
 
-                <thead>
+            <div class="d-flex align-items-end gap-3 flex-wrap">
 
-                    <tr>
+                <div>
 
-                        <th>S.No.</th>
-                        <th>CREW ID</th>
-                        <th>NAME</th>
-                        <th>DESIG</th>
-                        <th>TOTAL DUTY</th>
-                        <th>SIGNON DATE</th>
-                        <th>SIGNON STTN</th>
-                        <th>DEPARTURE</th>
-                        <th>PDD</th>
-                        <th>ARRIVAL</th>
-                        <th>SIGNOFF DATE</th>
-                        <th>SIGNOFF STTN</th>
-                        <th>DUTY HRS</th>
-                        <th>DUTY TYPE</th>
-                        <th>TRAIN NO</th>
-                        <th>LOCO NO</th>
-                        <th>WHEEL MOVEMENT</th>
-                        <th>AVG SPEED</th>
-                        <th>ROUTE KM</th>
-                        <th>TOTAL KM</th>
-                        <th>M/K</th>
-                        <th>CTO</th>
-                        <th>CMO</th>
-                        <th>SECTION</th>
-                        <th>ROUTE NAME</th>
-                        <th>RUNNING KM</th>
+                    <label class="form-label">
 
-                    </tr>
+                        Running KM From
 
-                    <tr class="filter-row">
+                    </label>
 
-                        <th></th><th></th><th></th><th></th><th></th>
-                        <th></th><th></th><th></th><th></th><th></th>
-                        <th></th><th></th><th></th><th></th><th></th>
-                        <th></th><th></th><th></th><th></th><th></th>
-                        <th></th><th></th><th></th><th></th><th></th>
-                        <th></th>
+                    <input
+                        type="number"
+                        id="kmFrom"
+                        class="form-control"
+                        value="1">
 
-                    </tr>
+                </div>
 
-                </thead>
+                <div>
 
-                <tbody></tbody>
+                    <label class="form-label">
 
-            </table>
+                        Running KM To
+
+                    </label>
+
+                    <input
+                        type="number"
+                        id="kmTo"
+                        class="form-control"
+                        value="500">
+
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    id="btnApplyKmFilter">
+
+                    Apply Filter
+
+                </button>
+
+                <button
+                    class="btn btn-secondary"
+                    id="btnResetKmFilter">
+
+                    Reset
+
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
+    <!-- RESULT TABLE -->
+
+    <div class="card section-card">
+
+        <div class="card-header">
+
+            <strong id="resultTitle">
+
+                Resultant Duties
+
+            </strong>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table
+                    id="resultTable"
+                    class="display table table-bordered table-striped w-100">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>S.No.</th>
+                            <th>CREW ID</th>
+                            <th>NAME</th>
+                            <th>DESIG</th>
+                            <th>TOTAL DUTY</th>
+                            <th>SIGNON DATE</th>
+                            <th>SIGNON STTN</th>
+                            <th>DEPARTURE</th>
+                            <th>PDD</th>
+                            <th>ARRIVAL</th>
+                            <th>SIGNOFF DATE</th>
+                            <th>SIGNOFF STTN</th>
+                            <th>DUTY HRS</th>
+                            <th>DUTY TYPE</th>
+                            <th>TRAIN NO</th>
+                            <th>LOCO NO</th>
+                            <th>WHEEL MOVEMENT</th>
+                            <th>AVG SPEED</th>
+                            <th>ROUTE KM</th>
+                            <th>TOTAL KM</th>
+                            <th>M/K</th>
+                            <th>CTO</th>
+                            <th>CMO</th>
+                            <th>SECTION</th>
+                            <th>ROUTE NAME</th>
+                            <th>RUNNING KM</th>
+
+                        </tr>
+
+                        <tr class="filter-row">
+
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -746,11 +805,21 @@ $("#zeroWheelTabBtn").on(
         activeAnalyzer =
             "zeroWheel";
 
+        $("#runningKmFilterPanel")
+            .hide();
+
+        $("#zeroWheelTabBtn")
+            .addClass("active");
+
+        $("#runningKmTabBtn")
+            .removeClass("active");
+
         $("#resultTitle").text(
-            "Resultant Zero Wheel Movement Duties"
+            "Zero Wheel Movement Result"
         );
 
-        analyzeZeroWheel();
+        filteredData =
+            [...zeroWheelData];
 
         loadResultTable();
 
@@ -761,7 +830,17 @@ $("#runningKmTabBtn").on(
     "click",
     function(){
 
-        activeAnalyzer = "runningKm";
+        activeAnalyzer =
+            "runningKm";
+
+        $("#runningKmFilterPanel")
+            .show();
+
+        $("#runningKmTabBtn")
+            .addClass("active");
+
+        $("#zeroWheelTabBtn")
+            .removeClass("active");
 
         $("#resultTitle").text(
             "Running KM Analysis Result"
@@ -771,7 +850,9 @@ $("#runningKmTabBtn").on(
             [...runningKmData];
 
         $("#includedGroups").text(
-            getUniqueGroups(filteredData)
+            getUniqueGroups(
+                filteredData
+            )
         );
 
         $("#returnedRows").text(
@@ -1246,13 +1327,9 @@ function analyzeRunningKm(){
             runningGroupCount++;
 
             group.forEach(row=>{
-
-                row["RUNNING_KM"] =
-                    runningKm;
-
+                row["RUNNING_KM"] = Number(runningKm.toFixed(2));
                 row["RUNNING_NEW_SNO"] =
                     newSno;
-
                 runningKmData.push(row);
 
             });
