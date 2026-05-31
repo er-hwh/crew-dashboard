@@ -27,38 +27,13 @@ href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.min.css">
 
 body{
     background:#f5f7fb;
-}
-
-.page-title{
-    font-size:28px;
-    font-weight:700;
-}
-
-.card-summary{
-    border:none;
-    border-radius:12px;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
-}
-
-.summary-number{
-    font-size:28px;
-    font-weight:700;
-    color:#0d6efd;
+    font-family:'Segoe UI',sans-serif;
 }
 
 .section-card{
     border:none;
     border-radius:12px;
     box-shadow:0 2px 10px rgba(0,0,0,.08);
-}
-
-.dt-container{
-    width:100%;
-    overflow-x:auto;
-}
-
-table.dataTable{
-    white-space:nowrap;
 }
 
 #loadingBox{
@@ -70,160 +45,184 @@ table.dataTable{
     color:#666;
 }
 
-.summary-bar{
+/* ===========================
+KPI SECTION
+=========================== */
 
+.summary-bar{
     position:sticky;
-
     top:0;
-
-    z-index:999;
-
-    display:flex;
-
-    gap:10px;
-
-    flex-wrap:wrap;
-
-    background:#ffffff;
-
-    padding:10px;
-
-    border-radius:10px;
-
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-
-}
-
-.summary-item{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    padding:6px 14px;
-
-    border-radius:8px;
-
-    background:#f8f9fa;
-
-}
-
-.summary-label{
-
-    font-size:13px;
-
-    color:#666;
-
-    font-weight:600;
-
-}
-
-.summary-value{
-
-    font-size:18px;
-
-    font-weight:700;
-
-    color:#0d6efd;
-
-}
-.table-responsive{
-
-    max-height:75vh;
-
-    overflow:auto;
-
-}
-
-.summary-bar{
-
+    z-index:1050;
     display:flex;
     flex-wrap:wrap;
     gap:12px;
-
-    position:sticky;
-    top:0;
-
-    z-index:1000;
-
     margin-bottom:15px;
 }
 
 .kpi-card{
-
-    width:200px;
-    height:75px;
-
-    background:#ffffff;
-
+    width:190px;
+    height:80px;
+    border:none;
     border-radius:12px;
-
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
-
-    border:1px solid #e5e7eb;
-
+    color:#fff;
     box-shadow:
-        0 2px 4px rgba(0,0,0,.04),
-        0 8px 16px rgba(0,0,0,.06);
-
-    transition:all .2s ease;
+        0 3px 8px rgba(0,0,0,.10);
+    transition:.25s;
 }
 
 .kpi-card:hover{
-
     transform:translateY(-3px);
-
-    box-shadow:
-        0 6px 12px rgba(0,0,0,.08),
-        0 12px 24px rgba(0,0,0,.12);
 }
 
 .kpi-title{
-
-    font-size:14px;
-
-    font-weight:750;
-
-    color:#6b7280;
-
-    letter-spacing:.8px;
-
+    font-size:12px;
+    font-weight:700;
     text-transform:uppercase;
-
+    letter-spacing:.6px;
     text-align:center;
 }
 
 .kpi-value{
-
-    margin-top:2px;
-
-    font-size:30px;
-
+    font-size:28px;
     font-weight:700;
-
-    color:#111827;
-
-    line-height:1;
+    line-height:1.1;
 }
-.filter-row input{
 
-    width:100%;
+/* ===========================
+NAV TABS
+=========================== */
 
-    min-width:70px;
+.nav-tabs{
+    border-bottom:none;
+}
 
+.nav-tabs .nav-link{
+    font-weight:600;
+    color:#495057;
+    border:none;
+    border-radius:10px 10px 0 0;
+    padding:10px 18px;
+    margin-right:4px;
+}
+
+.nav-tabs .nav-link.active{
+    background:#0d6efd;
+    color:#fff;
+}
+
+/* ===========================
+RUNNING KM PANEL
+=========================== */
+
+#runningKmTab .card{
+    border:none;
+    border-radius:12px;
+    box-shadow:
+        0 2px 10px rgba(0,0,0,.08);
+}
+
+#runningKmTab label{
+    font-size:13px;
+    font-weight:600;
+    color:#555;
+}
+
+/* ===========================
+TABLE
+=========================== */
+
+.table-responsive{
+    max-height:75vh;
+    overflow:auto;
+}
+
+table.dataTable{
+    white-space:nowrap;
+    font-size:13px;
+}
+
+table.dataTable thead th{
+    background:#212529;
+    color:#fff;
     font-size:12px;
-
-    padding:3px 5px;
-
-    border:1px solid #ced4da;
-
-    border-radius:4px;
+    position:sticky;
+    top:0;
+    z-index:10;
 }
+
+/* ===========================
+COLUMN FILTERS
+=========================== */
+
+.filter-row th{
+    padding:2px !important;
+    background:#f8f9fa !important;
+}
+
+.filter-row input{
+    width:100%;
+    min-width:40px;
+    max-width:100%;
+    height:24px;
+    font-size:11px;
+    padding:2px 4px;
+    border:1px solid #ced4da;
+    border-radius:4px;
+    box-sizing:border-box;
+}
+
+.filter-row input:focus{
+    outline:none;
+    border-color:#0d6efd;
+    box-shadow:
+        0 0 0 2px rgba(13,110,253,.15);
+}
+
+/* ===========================
+BUTTONS
+=========================== */
+
+.btn{
+    border-radius:8px;
+}
+
+#btnExport,
+#btnExportPdf{
+    min-width:130px;
+}
+
+/* ===========================
+DATATABLE
+=========================== */
+
+.dataTables_wrapper .dataTables_filter{
+    margin-bottom:10px;
+}
+
+.dataTables_wrapper .dataTables_length{
+    margin-bottom:10px;
+}
+
+/* ===========================
+MOBILE
+=========================== */
+
+@media(max-width:768px){
+    .kpi-card{
+
+        width:calc(50% - 6px);
+    }
+
+    .kpi-value{
+
+        font-size:22px;
+    }
+}
+
 </style>
 
 </head>
@@ -232,205 +231,333 @@ table.dataTable{
 
 <div class="container-fluid py-4">
 
-    <!-- SUMMARY -->
+<!-- KPI SUMMARY -->
 
-    <div class="summary-bar mb-3">
+<div class="summary-bar mb-3">
 
-        <div class="kpi-card bg-primary">
-            <div class="kpi-title text-white">TOTAL ROWS</div>
-            <div class="kpi-value" id="totalRows">0</div>
-        </div>
-
-        <div class="kpi-card bg-success">
-            <div class="kpi-title text-white">NO. OF DUTY</div>
-            <div class="kpi-value" id="totalGroups">0</div>
-        </div>
-
-        <div class="kpi-card bg-dark">
-            <div class="kpi-title text-white">ZERO WHEEL MOVEMENT</div>
-            <div class="kpi-value text-success" id="includedGroups">0</div>
-        </div>
-
-        <div class="kpi-card bg-warning">
-            <div class="kpi-title text-white">EXCLUDED</div>
-            <div class="kpi-value text-danger" id="excludedGroups">0</div>
-        </div>
-
-        <div class="kpi-card bg-secondary">
-            <div class="kpi-title text-white">RETURNED ROWS</div>
-            <div class="kpi-value text-warning" id="returnedRows">0</div>
-        </div>
-
-        <div class="kpi-card bg-info">
-            <div class="kpi-title text-white">STATUS</div>
-            <div class="kpi-value text-primary" id="fileStatus">
-                Ready
-            </div>
-        </div>
-
+    <div class="kpi-card bg-primary">
+        <div class="kpi-title text-white">TOTAL ROWS</div>
+        <div class="kpi-value" id="totalRows">0</div>
     </div>
 
-    <div class="card section-card mb-4">
-        <div class="card-body">
-
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <input
-                        type="file"
-                        id="excelFile"
-                        class="form-control"
-                        accept=".xlsx,.xls"
-                    >
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <button
-                        class="btn btn-primary"
-                        id="btnAnalyze"
-                    >
-                        <i class="bi bi-search"></i>
-                        Analyze Report
-                    </button>
-
-                    <button
-                        class="btn btn-secondary"
-                        id="btnClear"
-                    >
-                        Clear
-                    </button>
-
-                </div>
-
-                <div class="col-md-3">
-                    <button
-                        class="btn btn-success"
-                        id="btnExport"
-                        disabled
-                    >
-                        <i class="bi bi-file-earmark-excel"></i>
-                        Export as Excel
-                    </button>
-                    <button
-                        class="btn btn-warning"
-                        id="btnExportPdf"
-                        disabled
-                    >
-                        <i class="bi bi-file-earmark-excel"></i>
-                        Export as Pdf
-                    </button>
-                </div>
-            </div>
-
-        </div>
+    <div class="kpi-card bg-success">
+        <div class="kpi-title text-white">NO. OF DUTY</div>
+        <div class="kpi-value" id="totalGroups">0</div>
     </div>
 
-    <!-- LOADING -->
-
-    <div class="alert alert-info" id="loadingBox">
-        Processing Report...
+    <div class="kpi-card bg-dark">
+        <div class="kpi-title text-white">MATCHED GROUPS</div>
+        <div class="kpi-value text-success" id="includedGroups">0</div>
     </div>
 
-    <!-- RESULT TABLE -->
-
-    <div class="card section-card">
-
-        <div class="card-header">
-
-            <strong>
-                Resultant Zero Wheel Movement Duties
-            </strong>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="table-responsive">
-
-                <table
-                    id="resultTable"
-                    class="display table table-bordered table-striped w-100"
-                >
-
-                    <thead>
-
-                        <tr>
-
-                            <th>S.No.</th>
-                            <th>CREW ID</th>
-                            <th>NAME</th>
-                            <th>DESIG</th>
-                            <th>TOTAL DUTY</th>
-                            <th>SIGNON DATE</th>
-                            <th>SIGNON STTN</th>
-                            <th>DEPARTURE</th>
-                            <th>PDD</th>
-                            <th>ARRIVAL</th>
-                            <th>SIGNOFF DATE</th>
-                            <th>SIGNOFF STTN</th>
-                            <th>DUTY HRS</th>
-                            <th>DUTY TYPE</th>
-                            <th>TRAIN NO</th>
-                            <th>LOCO NO</th>
-                            <th>WHEEL MOVEMENT</th>
-                            <th>AVG SPEED</th>
-                            <th>ROUTE KM</th>
-                            <th>TOTAL KM</th>
-                            <th>M/K</th>
-                            <th>CTO</th>
-                            <th>CMO</th>
-                            <th>SECTION</th>
-                            <th>ROUTE NAME</th>
-
-                        </tr>
-                        <tr class="filter-row">
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
+    <div class="kpi-card bg-warning">
+        <div class="kpi-title text-white">EXCLUDED</div>
+        <div class="kpi-value text-danger" id="excludedGroups">0</div>
     </div>
 
-    <div class="mt-3 footer-note">
-        Developed for CMS Zero Wheel Movement Analysis.
+    <div class="kpi-card bg-secondary">
+        <div class="kpi-title text-white">RETURNED ROWS</div>
+        <div class="kpi-value text-warning" id="returnedRows">0</div>
+    </div>
+
+    <div class="kpi-card bg-info">
+        <div class="kpi-title text-white">STATUS</div>
+        <div class="kpi-value text-primary" id="fileStatus">
+            Ready
+        </div>
     </div>
 
 </div>
+
+<!-- FILE SECTION -->
+
+<div class="card section-card mb-3">
+
+    <div class="card-body">
+
+        <div class="row g-3 align-items-end">
+
+            <div class="col-md-3">
+
+                <label class="form-label">
+                    CMS Excel File
+                </label>
+
+                <input
+                    type="file"
+                    id="excelFile"
+                    class="form-control"
+                    accept=".xlsx,.xls">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <button
+                    class="btn btn-primary"
+                    id="btnAnalyze">
+
+                    <i class="bi bi-search"></i>
+                    Analyze Report
+
+                </button>
+
+                <button
+                    class="btn btn-secondary"
+                    id="btnClear">
+
+                    Clear
+
+                </button>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <button
+                    class="btn btn-success"
+                    id="btnExport"
+                    disabled>
+
+                    <i class="bi bi-file-earmark-excel"></i>
+                    Export Excel
+
+                </button>
+
+                <button
+                    class="btn btn-warning"
+                    id="btnExportPdf"
+                    disabled>
+
+                    <i class="bi bi-file-earmark-pdf"></i>
+                    Export PDF
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- LOADING -->
+
+<div
+    class="alert alert-info"
+    id="loadingBox">
+
+    Processing Report...
+
+</div>
+
+<!-- ANALYZER TABS -->
+
+<div class="card section-card mb-3">
+
+    <div class="card-body p-2">
+
+        <ul
+            class="nav nav-tabs"
+            id="analysisTabs">
+
+            <li class="nav-item">
+
+                <button
+                    class="nav-link active"
+                    id="zeroWheelTabBtn"
+                    data-bs-toggle="tab"
+                    data-bs-target="#zeroWheelTab">
+
+                    Zero Wheel Movement
+
+                </button>
+
+            </li>
+
+            <li class="nav-item">
+
+                <button
+                    class="nav-link"
+                    id="runningKmTabBtn"
+                    data-bs-toggle="tab"
+                    data-bs-target="#runningKmTab">
+
+                    Running KM Analyzer
+
+                </button>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+</div>
+
+<!-- TAB CONTENT -->
+
+<div class="tab-content mb-3">
+
+    <div
+        class="tab-pane fade show active"
+        id="zeroWheelTab">
+
+    </div>
+
+    <div
+        class="tab-pane fade"
+        id="runningKmTab">
+
+        <div class="card section-card">
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-2">
+
+                        <label>
+                            Running KM From
+                        </label>
+
+                        <input
+                            type="number"
+                            id="kmFrom"
+                            class="form-control"
+                            value="1">
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <label>
+                            Running KM To
+                        </label>
+
+                        <input
+                            type="number"
+                            id="kmTo"
+                            class="form-control"
+                            value="500">
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <button
+                            class="btn btn-primary mt-4"
+                            id="btnApplyKmFilter">
+
+                            Apply Filter
+
+                        </button>
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <button
+                            class="btn btn-secondary mt-4"
+                            id="btnResetKmFilter">
+
+                            Reset
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- RESULT TABLE -->
+
+<div class="card section-card">
+
+    <div class="card-header">
+
+        <strong id="resultTitle">
+
+            Resultant Duties
+
+        </strong>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table
+                id="resultTable"
+                class="display table table-bordered table-striped w-100">
+
+                <thead>
+
+                    <tr>
+
+                        <th>S.No.</th>
+                        <th>CREW ID</th>
+                        <th>NAME</th>
+                        <th>DESIG</th>
+                        <th>TOTAL DUTY</th>
+                        <th>SIGNON DATE</th>
+                        <th>SIGNON STTN</th>
+                        <th>DEPARTURE</th>
+                        <th>PDD</th>
+                        <th>ARRIVAL</th>
+                        <th>SIGNOFF DATE</th>
+                        <th>SIGNOFF STTN</th>
+                        <th>DUTY HRS</th>
+                        <th>DUTY TYPE</th>
+                        <th>TRAIN NO</th>
+                        <th>LOCO NO</th>
+                        <th>WHEEL MOVEMENT</th>
+                        <th>AVG SPEED</th>
+                        <th>ROUTE KM</th>
+                        <th>TOTAL KM</th>
+                        <th>M/K</th>
+                        <th>CTO</th>
+                        <th>CMO</th>
+                        <th>SECTION</th>
+                        <th>ROUTE NAME</th>
+                        <th>RUNNING KM</th>
+
+                    </tr>
+
+                    <tr class="filter-row">
+
+                        <th></th><th></th><th></th><th></th><th></th>
+                        <th></th><th></th><th></th><th></th><th></th>
+                        <th></th><th></th><th></th><th></th><th></th>
+                        <th></th><th></th><th></th><th></th><th></th>
+                        <th></th><th></th><th></th><th></th><th></th>
+                        <th></th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
 
 <!-- JQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -470,6 +597,19 @@ table.dataTable{
 
 let originalData = [];
 let filteredData = [];
+
+let zeroWheelData = [];
+let runningKmData = [];
+
+let activeAnalyzer = "zeroWheel";
+
+let currentResultData = [];
+
+const RUNNING_DUTY_TYPES = [
+    "WR",
+    "LR",
+    "SH"
+];
 
 /* ===========================
    RULE CONFIG
@@ -542,6 +682,106 @@ $(document).ready(function(){
     });
 
 });
+
+function getReportHeading(){
+
+    if(activeAnalyzer === "runningKm"){
+
+        return "CMS RUNNING KM ANALYZER REPORT";
+
+    }
+
+    return "CMS ZERO WHEEL MOVEMENT REPORT";
+
+}
+
+$("#btnApplyKmFilter").on(
+    "click",
+    function(){
+
+        activeAnalyzer =
+            "runningKm";
+
+        $("#resultTitle").text(
+            "Running KM Analysis Result"
+        );
+
+        applyRunningKmFilter();
+
+    }
+);
+
+$("#btnResetKmFilter").on(
+    "click",
+    function(){
+
+        $("#kmFrom").val(1);
+
+        $("#kmTo").val(500);
+
+        filteredData =
+            runningKmData.filter(
+                row => true
+            );
+
+        $("#includedGroups").text(
+            getUniqueGroups(filteredData)
+        );
+
+        $("#returnedRows").text(
+            filteredData.length
+        );
+
+        loadResultTable();
+
+        loadResultTable();
+
+    }
+);
+
+$("#zeroWheelTabBtn").on(
+    "click",
+    function(){
+
+        activeAnalyzer =
+            "zeroWheel";
+
+        $("#resultTitle").text(
+            "Resultant Zero Wheel Movement Duties"
+        );
+
+        analyzeZeroWheel();
+
+        loadResultTable();
+
+    }
+);
+
+$("#runningKmTabBtn").on(
+    "click",
+    function(){
+
+        activeAnalyzer = "runningKm";
+
+        $("#resultTitle").text(
+            "Running KM Analysis Result"
+        );
+
+        filteredData =
+            [...runningKmData];
+
+        $("#includedGroups").text(
+            getUniqueGroups(filteredData)
+        );
+
+        $("#returnedRows").text(
+            filteredData.length
+        );
+
+        loadResultTable();
+
+    }
+);
 
 /* ===========================
    EXCEL READER
@@ -715,10 +955,16 @@ $("#btnAnalyze").on("click",async function(){
             `Excel Loaded Successfully\n\nRows : ${originalData.length}\nGroups : ${dutyGroups.size}`
         );
 
-        analyzeDutyGroups();
+        analyzeZeroWheel();
+        analyzeRunningKm();
+        activeAnalyzer =
+            "zeroWheel";
+        filteredData =
+            [...zeroWheelData];
+        $("#resultTitle").text(
+            "Resultant Zero Wheel Movement Duties"
+        );
         loadResultTable();
-
-        console.log(originalData);
 
     }
     catch(error){
@@ -854,9 +1100,11 @@ function getUniqueGroups(data){
    MAIN ANALYZER
 =========================== */
 
-function analyzeDutyGroups(){
+function analyzeZeroWheel(){
 
     filteredData = [];
+
+    zeroWheelData = [];
 
     const groupedData =
         groupBySNo(originalData);
@@ -867,10 +1115,14 @@ function analyzeDutyGroups(){
     groups.sort((a,b)=>{
 
         const dateA =
-            new Date(a[0]["SIGNON DATE"]);
+            new Date(
+                a[0]["SIGNON DATE"]
+            );
 
         const dateB =
-            new Date(b[0]["SIGNON DATE"]);
+            new Date(
+                b[0]["SIGNON DATE"]
+            );
 
         return dateA - dateB;
 
@@ -892,9 +1144,10 @@ function analyzeDutyGroups(){
 
             group.forEach(row=>{
 
-                row["NEW_SNO"] = newSno;
+                row["NEW_SNO"] =
+                    newSno;
 
-                filteredData.push(row);
+                zeroWheelData.push(row);
 
             });
 
@@ -909,12 +1162,150 @@ function analyzeDutyGroups(){
 
     });
 
-    $("#includedGroups").text(includedCount);
-    $("#excludedGroups").text(excludedCount);
-    $("#returnedRows").text(filteredData.length);
+    filteredData =
+        [...zeroWheelData];
 
-    $("#btnExport").prop("disabled", false);
-    $("#btnExportPdf").prop("disabled", false);
+    $("#includedGroups").text(
+        includedCount
+    );
+
+    $("#excludedGroups").text(
+        excludedCount
+    );
+
+    $("#returnedRows").text(
+        filteredData.length
+    );
+
+    $("#btnExport").prop(
+        "disabled",
+        false
+    );
+
+    $("#btnExportPdf").prop(
+        "disabled",
+        false
+    );
+
+}
+
+
+function analyzeRunningKm(){
+
+    runningKmData = [];
+
+    const groupedData =
+        groupBySNo(originalData);
+
+    const groups =
+        Object.values(groupedData);
+
+    let runningGroupCount = 0;
+
+    let newSno = 1;
+
+    groups.forEach(group=>{
+
+        let runningKm = 0;
+
+        let hasRunningDuty = false;
+
+        group.forEach(row=>{
+
+            const dutyType =
+                String(
+                    row["DUTY TYPE"] || ""
+                )
+                .trim()
+                .toUpperCase();
+
+            if(
+                RUNNING_DUTY_TYPES.includes(
+                    dutyType
+                )
+            ){
+
+                hasRunningDuty = true;
+
+                const km =
+                    parseFloat(
+                        String(
+                            row["Route KM"] || 0
+                        )
+                        .replace(/[^0-9.-]/g,"")
+                    ) || 0;
+
+                runningKm += km;
+
+            }
+
+        });
+
+        if(hasRunningDuty){
+
+            runningGroupCount++;
+
+            group.forEach(row=>{
+
+                row["RUNNING_KM"] =
+                    runningKm;
+
+                row["RUNNING_NEW_SNO"] =
+                    newSno;
+
+                runningKmData.push(row);
+
+            });
+
+            newSno++;
+
+        }
+
+    });
+
+    console.log(
+        "Running Groups:",
+        runningGroupCount
+    );
+
+}
+
+function applyRunningKmFilter(){
+
+    const fromKm =
+        Number(
+            $("#kmFrom").val()
+        ) || 0;
+
+    const toKm =
+        Number(
+            $("#kmTo").val()
+        ) || 999999;
+
+    filteredData =
+        runningKmData.filter(row=>{
+
+            const km =
+                Number(
+                    row["RUNNING_KM"] || 0
+                );
+
+            return (
+                km >= fromKm &&
+                km <= toKm
+            );
+
+        });
+
+    $("#includedGroups").text(
+        getUniqueGroups(filteredData)
+    );
+
+    $("#returnedRows").text(
+        filteredData.length
+    );
+
+    loadResultTable();
 
 }
 
@@ -930,7 +1321,10 @@ function loadResultTable(){
 
         resultTable.row.add([
 
-            row["NEW_SNO"] || "",
+            row["NEW_SNO"] ||
+            row["RUNNING_NEW_SNO"] ||
+            "",
+
             row["CREW ID"] || "",
             row["NAME"] || "",
             row["DESIG"] || "",
@@ -956,11 +1350,13 @@ function loadResultTable(){
             row["Section"] || "",
             row["Route Name"] || "",
 
+            row["RUNNING_KM"] || ""
+
         ]);
 
     });
 
-    resultTable.draw();
+    resultTable.draw(false);
 
 }
 
@@ -982,7 +1378,10 @@ function exportToExcel(){
         const exportData =
             filteredData.map(row=>({
 
-                "S.No.": row["NEW_SNO"] || "",
+                "S.No.": row["NEW_SNO"] ||
+                          row["RUNNING_NEW_SNO"] ||
+                          "",
+
                 "CREW ID": row["CREW ID"] || "",
                 "NAME": row["NAME"] || "",
                 "DESIG": row["DESIG"] || "",
@@ -1006,14 +1405,16 @@ function exportToExcel(){
                 "CTO": row["CTO"] || "",
                 "CMO": row["CMO"] || "",
                 "SECTION": row["Section"] || "",
-                "ROUTE NAME": row["Route Name"] || ""
+                "ROUTE NAME": row["Route Name"] || "",
+                "RUNNING KM": row["RUNNING_KM"] || ""
 
             }));
 
-        const wb = XLSX.utils.book_new();
+        const wb =
+            XLSX.utils.book_new();
 
         const heading =
-            `CMS ZERO WHEEL MOVEMENT REPORT | Generated: ${new Date().toLocaleString()} | Duty: ${$("#totalGroups").text()} | Zero WM: ${$("#includedGroups").text()} | Returned: ${$("#returnedRows").text()}`;
+            `${getReportHeading()} | Generated: ${new Date().toLocaleString()} | Duty: ${$("#totalGroups").text()} | Returned: ${$("#returnedRows").text()}`;
 
         const ws =
             XLSX.utils.aoa_to_sheet([
@@ -1024,13 +1425,13 @@ function exportToExcel(){
             ws,
             exportData,
             {
-                origin: "A3"
+                origin:"A3"
             }
         );
 
         ws["!merges"] = [{
             s:{r:0,c:0},
-            e:{r:0,c:25}
+            e:{r:0,c:26}
         }];
 
         ws["!cols"] = [
@@ -1059,25 +1460,51 @@ function exportToExcel(){
             {wch:12},
             {wch:12},
             {wch:20},
-            {wch:30}
+            {wch:30},
+            {wch:15}
 
         ];
 
         XLSX.utils.book_append_sheet(
+
             wb,
+
             ws,
-            "Zero Wheel Movement"
+
+            activeAnalyzer === "runningKm"
+                ? "Running KM"
+                : "Zero Wheel"
+
         );
 
-        const today = new Date();
+        const today =
+            new Date();
+
+        const prefix =
+            activeAnalyzer === "runningKm"
+                ? "Running_KM_Analyzer"
+                : "Zero_Wheel_Movement";
 
         const fileName =
-            "Zero_Wheel_Movement_" +
+
+            prefix +
+
+            "_" +
+
             today.getFullYear() +
+
             "-" +
-            String(today.getMonth()+1).padStart(2,"0") +
+
+            String(
+                today.getMonth()+1
+            ).padStart(2,"0") +
+
             "-" +
-            String(today.getDate()).padStart(2,"0") +
+
+            String(
+                today.getDate()
+            ).padStart(2,"0") +
+
             ".xlsx";
 
         XLSX.writeFile(
@@ -1118,14 +1545,11 @@ function exportToPdf(){
     );
 
     const heading =
-        `CMS ZERO WHEEL MOVEMENT REPORT | Generated: ${new Date().toLocaleString()} | Duty: ${$("#totalGroups").text()} | Zero WM: ${$("#includedGroups").text()} | Returned: ${$("#returnedRows").text()}`;
+        `${getReportHeading()} | Generated: ${new Date().toLocaleString()} | Duty: ${$("#totalGroups").text()} | Returned: ${$("#returnedRows").text()}`;
 
     doc.setFontSize(8);
 
-    doc.setFont(
-        undefined,
-        "bold"
-    );
+    doc.setFont(undefined,"bold");
 
     doc.text(
         heading,
@@ -1139,7 +1563,10 @@ function exportToPdf(){
 
         tableData.push([
 
-            row["NEW_SNO"] || "",
+            row["NEW_SNO"] ||
+            row["RUNNING_NEW_SNO"] ||
+            "",
+
             row["CREW ID"] || "",
             row["NAME"] || "",
             row["DESIG"] || "",
@@ -1163,7 +1590,8 @@ function exportToPdf(){
             row["CTO"] || "",
             row["CMO"] || "",
             row["Section"] || "",
-            row["Route Name"] || ""
+            row["Route Name"] || "",
+            row["RUNNING_KM"] || ""
 
         ]);
 
@@ -1198,12 +1626,13 @@ function exportToPdf(){
             "CTO",
             "CMO",
             "Section",
-            "Route Name"
+            "Route Name",
+            "Running KM"
         ]],
 
-        body: tableData,
+        body:tableData,
 
-        theme: "grid",
+        theme:"grid",
 
         styles:{
             fontSize:4,
@@ -1217,10 +1646,6 @@ function exportToPdf(){
             textColor:[255,255,255],
             fontSize:4,
             halign:'center'
-        },
-
-        bodyStyles:{
-            fontSize:4
         },
 
         alternateRowStyles:{
@@ -1243,17 +1668,19 @@ function exportToPdf(){
 
     const today = new Date();
 
+    const prefix =
+        activeAnalyzer === "runningKm"
+            ? "Running_KM_Analyzer"
+            : "Zero_Wheel_Movement";
+
     const fileName =
-        "Zero_Wheel_Movement_" +
+        prefix +
+        "_" +
         today.getFullYear() +
         "-" +
-        String(
-            today.getMonth()+1
-        ).padStart(2,"0") +
+        String(today.getMonth()+1).padStart(2,"0") +
         "-" +
-        String(
-            today.getDate()
-        ).padStart(2,"0") +
+        String(today.getDate()).padStart(2,"0") +
         ".pdf";
 
     doc.save(fileName);
@@ -1281,6 +1708,30 @@ $("#btnClear").on("click",function(){
     location.reload();
 
 });
+
+function parseCmsDate(dateStr){
+
+    if(!dateStr)
+        return new Date(0);
+
+    const parts =
+        String(dateStr)
+        .split("-");
+
+    if(parts.length !== 3)
+        return new Date(dateStr);
+
+    return new Date(
+        parts[2],
+        parts[1]-1,
+        parts[0]
+    );
+
+}
+
+function getCurrentData(){
+    return filteredData;
+}
 
 </script>
 
