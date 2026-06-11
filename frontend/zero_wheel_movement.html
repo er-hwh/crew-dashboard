@@ -330,6 +330,13 @@ table.dataTable thead th{
                     </span>
 
                 </div>
+                <div style="display:none">
+                    <span id="totalRows">0</span>
+                    <span id="totalGroups">0</span>
+                    <span id="includedGroups">0</span>
+                    <span id="excludedGroups">0</span>
+                    <span id="returnedRows">0</span>
+                </div>
 
             </div>
 
@@ -503,17 +510,18 @@ table.dataTable thead th{
                     DUTY HRS
                 </span>
 
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 text-center">
                     <label class="mb-0 small fw-semibold">
                         From
                     </label>
 
                     <input
-                        type="time"
+                        type="text"
                         id="dutyFrom"
                         class="form-control form-control-sm"
                         value="09:00"
-                        style="width:120px;">
+                        placeholder="HH:MM"
+                        style="width:90px;">
                 </div>
 
                 <div class="d-flex align-items-center gap-2">
@@ -522,11 +530,12 @@ table.dataTable thead th{
                     </label>
 
                     <input
-                        type="time"
+                        type="text"
                         id="dutyTo"
                         class="form-control form-control-sm"
                         value="23:59"
-                        style="width:120px;">
+                        placeholder="HH:MM"
+                        style="width:90px;">
                 </div>
 
             </div>
@@ -840,9 +849,10 @@ $("#btnResetKmFilter").on(
         );
 
         loadResultTable();
+        updateSummary();
 
         loadResultTable();
-
+        updateSummary();
     }
 );
 
@@ -869,7 +879,17 @@ $("#zeroWheelTabBtn").on(
         filteredData =
             [...zeroWheelData];
 
+        $("#includedGroups").text(
+            getUniqueGroups(filteredData)
+        );
+
+        $("#returnedRows").text(
+            filteredData.length
+        );
+
         loadResultTable();
+
+        updateSummary();
 
     }
 );
@@ -908,6 +928,7 @@ $("#runningKmTabBtn").on(
         );
 
         loadResultTable();
+        updateSummary();
 
     }
 );
@@ -1085,15 +1106,70 @@ $("#btnAnalyze").on("click",async function(){
         );
 
         analyzeZeroWheel();
+
         analyzeRunningKm();
-        activeAnalyzer =
-            "zeroWheel";
-        filteredData =
-            [...zeroWheelData];
-        $("#resultTitle").text(
-            "Resultant Zero Wheel Movement Duties"
-        );
+
+        if(activeAnalyzer === "runningKm"){
+
+            filteredData =
+                [...runningKmData];
+
+            $("#runningKmFilterPanel")
+                .show();
+
+            $("#resultTitle").text(
+                "Running KM Analysis Result"
+            );
+
+            $("#runningKmTabBtn")
+                .addClass("active");
+
+            $("#zeroWheelTabBtn")
+                .removeClass("active");
+
+            $("#includedGroups").text(
+                getUniqueGroups(filteredData)
+            );
+
+            $("#returnedRows").text(
+                filteredData.length
+            );
+
+        }
+        else{
+
+            activeAnalyzer =
+                "zeroWheel";
+
+            filteredData =
+                [...zeroWheelData];
+
+            $("#runningKmFilterPanel")
+                .hide();
+
+            $("#resultTitle").text(
+                "Resultant Zero Wheel Movement Duties"
+            );
+
+            $("#zeroWheelTabBtn")
+                .addClass("active");
+
+            $("#runningKmTabBtn")
+                .removeClass("active");
+
+            $("#includedGroups").text(
+                getUniqueGroups(filteredData)
+            );
+
+            $("#returnedRows").text(
+                filteredData.length
+            );
+
+        }
+
         loadResultTable();
+
+        updateSummary();
 
     }
     catch(error){
