@@ -321,27 +321,13 @@ table.dataTable thead th{
 
                 <div class="stats-line">
 
-                    Rows:
-                    <span id="totalRows">0</span>
+                    <span id="summaryText">
 
-                    |
+                        Total Duty : 0 (Rows : 0)
+                        |
+                        Matches Found : 0 (Rows : 0)
 
-                    Duty:
-                    <span id="totalGroups">0</span>
-
-                    |
-
-                    Matched:
-                    <span id="includedGroups">0</span>
-                    |
-
-                    Excluded:
-                    <span id="excludedGroups">0</span>
-
-                    |
-
-                    Returned:
-                    <span id="returnedRows">0</span>
+                    </span>
 
                 </div>
 
@@ -455,58 +441,114 @@ table.dataTable thead th{
     <!-- RUNNING KM FILTER -->
 
     <div
-        id="runningKmFilterPanel"
-        class="card section-card mb-3"
-        style="display:none;">
+    id="runningKmFilterPanel"
+    class="card section-card mb-3"
+    style="display:none;">
 
-        <div class="card-body">
+    <div class="card-body py-3">
 
-            <div class="d-flex align-items-end gap-3 flex-wrap">
+        <div class="d-flex align-items-center gap-4 flex-wrap">
 
-                <div>
+            <!-- Running KM -->
 
-                    <label class="form-label">
+            <div
+                class="rounded p-3 d-flex align-items-center gap-3"
+                style="
+                    background:#eef7ff;
+                    border:1px solid #b6d4fe;
+                ">
 
-                        Running KM From
+                <span class="fw-bold text-primary">
+                    RUN KM
+                </span>
 
+                <div class="d-flex align-items-center gap-2">
+                    <label class="mb-0 small fw-semibold">
+                        From
                     </label>
 
                     <input
                         type="number"
                         id="kmFrom"
-                        class="form-control"
-                        value="1">
-
+                        class="form-control form-control-sm"
+                        value="1"
+                        style="width:90px;">
                 </div>
 
-                <div>
-
-                    <label class="form-label">
-
-                        Running KM To
-
+                <div class="d-flex align-items-center gap-2">
+                    <label class="mb-0 small fw-semibold">
+                        To
                     </label>
 
                     <input
                         type="number"
                         id="kmTo"
-                        class="form-control"
-                        value="500">
-
+                        class="form-control form-control-sm"
+                        value="300"
+                        style="width:90px;">
                 </div>
+
+            </div>
+
+            <!-- Duty Hours -->
+
+            <div
+                class="rounded p-3 d-flex align-items-center gap-3"
+                style="
+                    background:#fff8e6;
+                    border:1px solid #ffe69c;
+                ">
+
+                <span class="fw-bold text-warning">
+                    DUTY HRS
+                </span>
+
+                <div class="d-flex align-items-center gap-2">
+                    <label class="mb-0 small fw-semibold">
+                        From
+                    </label>
+
+                    <input
+                        type="time"
+                        id="dutyFrom"
+                        class="form-control form-control-sm"
+                        value="09:00"
+                        style="width:120px;">
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <label class="mb-0 small fw-semibold">
+                        To
+                    </label>
+
+                    <input
+                        type="time"
+                        id="dutyTo"
+                        class="form-control form-control-sm"
+                        value="23:59"
+                        style="width:120px;">
+                </div>
+
+            </div>
+
+            <!-- Buttons -->
+
+            <div class="d-flex gap-2">
 
                 <button
                     class="btn btn-primary"
                     id="btnApplyKmFilter">
 
-                    Apply Filter
+                    <i class="bi bi-funnel-fill"></i>
+                    Apply
 
                 </button>
 
                 <button
-                    class="btn btn-secondary"
+                    class="btn btn-outline-secondary"
                     id="btnResetKmFilter">
 
+                    <i class="bi bi-arrow-clockwise"></i>
                     Reset
 
                 </button>
@@ -516,6 +558,8 @@ table.dataTable thead th{
         </div>
 
     </div>
+
+</div>
 
     <!-- RESULT TABLE -->
 
@@ -776,7 +820,11 @@ $("#btnResetKmFilter").on(
 
         $("#kmFrom").val(1);
 
-        $("#kmTo").val(500);
+        $("#kmTo").val(300);
+
+        $("#dutyFrom").val("09:00");
+
+        $("#dutyTo").val("23:59");
 
         filteredData =
             runningKmData.filter(
@@ -1135,14 +1183,22 @@ function isValidDutyGroup(group){
     const hasRequired =
         hasYR || hasWT;
 
-    const hasExcluded =
+    const hasExcludedDutyType =
         dutyTypes.some(type =>
             EXCLUDED_DUTY_TYPES.includes(type)
         );
 
+    const hasExcludedRemarks =
+        hasExcludedText(group);
+
     return (
+
         hasRequired &&
-        !hasExcluded
+
+        !hasExcludedDutyType &&
+
+        !hasExcludedRemarks
+
     );
 
 }
@@ -1267,6 +1323,7 @@ function analyzeZeroWheel(){
         "disabled",
         false
     );
+    updateSummary();
 
 }
 
@@ -1350,14 +1407,20 @@ function analyzeRunningKm(){
 function applyRunningKmFilter(){
 
     const fromKm =
-        Number(
-            $("#kmFrom").val()
-        ) || 0;
+        Number($("#kmFrom").val()) || 0;
 
     const toKm =
-        Number(
-            $("#kmTo").val()
-        ) || 999999;
+        Number($("#kmTo").val()) || 999999;
+
+    const dutyFrom =
+        timeToMinutes(
+            $("#dutyFrom").val()
+        );
+
+    const dutyTo =
+        timeToMinutes(
+            $("#dutyTo").val()
+        );
 
     filteredData =
         runningKmData.filter(row=>{
@@ -1367,9 +1430,19 @@ function applyRunningKmFilter(){
                     row["RUNNING_KM"] || 0
                 );
 
+            const dutyMinutes =
+                timeToMinutes(
+                    row["TOTAL DUTY"]
+                );
+
             return (
+
                 km >= fromKm &&
-                km <= toKm
+                km <= toKm &&
+
+                dutyMinutes >= dutyFrom &&
+                dutyMinutes <= dutyTo
+
             );
 
         });
@@ -1383,6 +1456,7 @@ function applyRunningKmFilter(){
     );
 
     loadResultTable();
+    updateSummary();
 
 }
 
@@ -1394,13 +1468,29 @@ function loadResultTable(){
 
     resultTable.clear();
 
+    const snoMap = {};
+
+    let currentSno = 1;
+
     filteredData.forEach(row=>{
+
+        const originalSno =
+            String(
+                row["S.No."] ||
+                row["S.NO."] ||
+                ""
+            ).trim();
+
+        if(!snoMap[originalSno]){
+
+            snoMap[originalSno] =
+                currentSno++;
+
+        }
 
         resultTable.row.add([
 
-            row["NEW_SNO"] ||
-            row["RUNNING_NEW_SNO"] ||
-            "",
+            snoMap[originalSno],
 
             row["CREW ID"] || "",
             row["NAME"] || "",
@@ -1426,7 +1516,6 @@ function loadResultTable(){
             row["CMO"] || "",
             row["Section"] || "",
             row["Route Name"] || "",
-
             row["RUNNING_KM"] || ""
 
         ]);
@@ -1452,46 +1541,65 @@ function exportToExcel(){
 
     try{
 
+        const snoMap = {};
+
+        let currentSno = 1;
+
         const exportData =
-            filteredData.map(row=>({
+            filteredData.map(row=>{
 
-                "S.No.": row["NEW_SNO"] ||
-                          row["RUNNING_NEW_SNO"] ||
-                          "",
+                const originalSno =
+                    String(
+                        row["S.No."] ||
+                        row["S.NO."] ||
+                        ""
+                    ).trim();
 
-                "CREW ID": row["CREW ID"] || "",
-                "NAME": row["NAME"] || "",
-                "DESIG": row["DESIG"] || "",
-                "TOTAL DUTY": row["TOTAL DUTY"] || "",
-                "SIGNON DATE": row["SIGNON DATE"] || "",
-                "SIGNON STTN": row["SIGNON STTN"] || "",
-                "DEPARTURE": row["DEPARTURE"] || "",
-                "PDD": row["PDD"] || "",
-                "ARRIVAL": row["ARRIVAL"] || "",
-                "SIGNOFF DATE": row["SIGNOFF DATE"] || "",
-                "SIGNOFF STTN": row["SIGNOFF STTN"] || "",
-                "DUTY HRS": row["DUTY HRS"] || "",
-                "DUTY TYPE": row["DUTY TYPE"] || "",
-                "TRAIN NO": row["TRAIN NO"] || "",
-                "LOCO NO": row["LOCO NO"] || "",
-                "WHEEL MOVEMENT": row["WHEEL MOVEMENT"] || "",
-                "AVG SPEED": row["AVG. SPEED (KM/Hrs)"] || "",
-                "ROUTE KM": row["Route KM"] || "",
-                "TOTAL KM": row["TOTAL KM"] || "",
-                "M/K": row["M/K"] || "",
-                "CTO": row["CTO"] || "",
-                "CMO": row["CMO"] || "",
-                "SECTION": row["Section"] || "",
-                "ROUTE NAME": row["Route Name"] || "",
-                "RUNNING KM": row["RUNNING_KM"] || ""
+                if(!snoMap[originalSno]){
 
-            }));
+                    snoMap[originalSno] =
+                        currentSno++;
+
+                }
+
+                return {
+
+                    "S.No.": snoMap[originalSno],
+
+                    "CREW ID": row["CREW ID"] || "",
+                    "NAME": row["NAME"] || "",
+                    "DESIG": row["DESIG"] || "",
+                    "TOTAL DUTY": row["TOTAL DUTY"] || "",
+                    "SIGNON DATE": row["SIGNON DATE"] || "",
+                    "SIGNON STTN": row["SIGNON STTN"] || "",
+                    "DEPARTURE": row["DEPARTURE"] || "",
+                    "PDD": row["PDD"] || "",
+                    "ARRIVAL": row["ARRIVAL"] || "",
+                    "SIGNOFF DATE": row["SIGNOFF DATE"] || "",
+                    "SIGNOFF STTN": row["SIGNOFF STTN"] || "",
+                    "DUTY HRS": row["DUTY HRS"] || "",
+                    "DUTY TYPE": row["DUTY TYPE"] || "",
+                    "TRAIN NO": row["TRAIN NO"] || "",
+                    "LOCO NO": row["LOCO NO"] || "",
+                    "WHEEL MOVEMENT": row["WHEEL MOVEMENT"] || "",
+                    "AVG SPEED": row["AVG. SPEED (KM/Hrs)"] || "",
+                    "ROUTE KM": row["Route KM"] || "",
+                    "TOTAL KM": row["TOTAL KM"] || "",
+                    "M/K": row["M/K"] || "",
+                    "CTO": row["CTO"] || "",
+                    "CMO": row["CMO"] || "",
+                    "SECTION": row["Section"] || "",
+                    "ROUTE NAME": row["Route Name"] || "",
+                    "RUNNING KM": row["RUNNING_KM"] || ""
+
+                };
+
+            });
 
         const wb =
             XLSX.utils.book_new();
 
-        const heading =
-            `${getReportHeading()} | Generated: ${new Date().toLocaleString()} | Duty: ${$("#totalGroups").text()} | Returned: ${$("#returnedRows").text()}`;
+        const heading =`${getReportHeading()} | Generated: ${new Date().toLocaleString()} | Total Duty: ${$("#totalGroups").text()} (Rows: ${$("#totalRows").text()}) | Matches Found: ${$("#includedGroups").text()} (Rows: ${$("#returnedRows").text()})`;
 
         const ws =
             XLSX.utils.aoa_to_sheet([
@@ -1621,8 +1729,7 @@ function exportToPdf(){
         'a4'
     );
 
-    const heading =
-        `${getReportHeading()} | Generated: ${new Date().toLocaleString()} | Duty: ${$("#totalGroups").text()} | Returned: ${$("#returnedRows").text()}`;
+    const heading =`${getReportHeading()} | Generated: ${new Date().toLocaleString()} | Total Duty: ${$("#totalGroups").text()} (Rows: ${$("#totalRows").text()}) | Matches Found: ${$("#includedGroups").text()} (Rows: ${$("#returnedRows").text()})`;
 
     doc.setFontSize(8);
 
@@ -1636,13 +1743,29 @@ function exportToPdf(){
 
     const tableData = [];
 
+    const snoMap = {};
+
+    let currentSno = 1;
+
     filteredData.forEach(row=>{
+
+        const originalSno =
+            String(
+                row["S.No."] ||
+                row["S.NO."] ||
+                ""
+            ).trim();
+
+        if(!snoMap[originalSno]){
+
+            snoMap[originalSno] =
+                currentSno++;
+
+        }
 
         tableData.push([
 
-            row["NEW_SNO"] ||
-            row["RUNNING_NEW_SNO"] ||
-            "",
+            snoMap[originalSno],
 
             row["CREW ID"] || "",
             row["NAME"] || "",
@@ -1806,8 +1929,96 @@ function parseCmsDate(dateStr){
 
 }
 
+function timeToMinutes(timeStr){
+
+    if(!timeStr)
+        return 0;
+
+    const parts =
+        String(timeStr).split(":");
+
+    const hh =
+        Number(parts[0]) || 0;
+
+    const mm =
+        Number(parts[1]) || 0;
+
+    return (hh * 60) + mm;
+}
+
 function getCurrentData(){
     return filteredData;
+}
+
+function hasExcludedText(group){
+
+    return group.some(row=>{
+
+        const text =
+            String(
+                row["TRAIN NO"] || ""
+            )
+            .toUpperCase()
+            .trim();
+
+        // Basic keywords
+
+        const hasKeyword =
+
+            text.includes("ART") ||
+
+            text.includes("PT") ||
+
+            text.includes("PILOT") ||
+
+            text.includes("SHUNT") ||
+
+            text.includes("ENQ");
+
+        // RJG + Q/QRY combinations
+
+        const hasRJGQ =
+
+            text.includes("RJG") &&
+
+            (
+                text.includes("QRY") ||
+                text.includes("/Q") ||
+                text.includes("-Q") ||
+                text.includes(" Q ")
+            );
+
+        return (
+            hasKeyword ||
+            hasRJGQ
+        );
+
+    });
+
+}
+
+function updateSummary(){
+
+    const totalDuty =
+        $("#totalGroups").text();
+
+    const totalRows =
+        $("#totalRows").text();
+
+    const matchedDuty =
+        $("#includedGroups").text();
+
+    const returnedRows =
+        $("#returnedRows").text();
+
+    $("#summaryText").html(
+
+        `Total Duty : <span>${totalDuty}</span> (Rows : ${totalRows})
+         &nbsp; | &nbsp;
+         Matches Found : <span>${matchedDuty}</span> (Rows : ${returnedRows})`
+
+    );
+
 }
 
 </script>
